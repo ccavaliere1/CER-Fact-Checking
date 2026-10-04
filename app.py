@@ -367,7 +367,8 @@ def llm_reasoning_template(query):
     The justification will be always given as Justification: 
     Label can be yes, no, NEI, where yes: claim is true. no: claim is false. NEI: not enough information.
     The Label will be chosen with a voting system of support/refuse before.
-
+    Important: The supporting and refusing sentences MUST be copied verbatim (word-for-word) from the provided abstracts. Do not paraphrase, summarize, or alter any words.
+    
     Please write the Justification and Note in the same language as the user's question, but strictly keep the structural section titles ('Label:', 'Justification:', 'Supporting sentences from abstracts:', 'Refusing sentences from abstracts:', 'Note:') in English.
 
     [/INST] <</SYS>>
@@ -552,7 +553,7 @@ if page == "Single claim check":
                     for i in range(1, len(st.session_state.top_abstracts) + 1):
                         abstracts[f"abstract_{i}"] = globals()[f"abstract_{i}"]
 
-                    pattern = r'"\s*(.*?)\s*"\s*\([Aa]bstract[_\s]*(\d+)\)'
+                    pattern = r'-\s*[\"\u201c\u201d]?\s*(.*?)\s*[\"\u201c\u201d]?\s*\([Aa]bstract[_\s]*(\d+)\)'
 
                     supporting_texts = []
                     for item in supporting:
@@ -787,7 +788,7 @@ elif page == "Page check":
                     for i in range(1, len(st.session_state.top_abstracts) + 1):
                         abstracts[f"abstract_{i}"] = globals()[f"abstract_{i}"]
                     
-                    pattern = r'"\s*(.*?)\s*"\s*\(abstract_(\d+)\)'
+                    pattern = r'-\s*[\"\u201c\u201d]?\s*(.*?)\s*[\"\u201c\u201d]?\s*\([Aa]bstract[_\s]*(\d+)\)'
                     
                     supporting_texts = []
                     for item in supporting:
@@ -1130,7 +1131,7 @@ elif page == "Video check":
                     for i in range(1, len(st.session_state.top_abstracts) + 1):
                         abstracts[f"abstract_{i}"] = globals()[f"abstract_{i}"]
 
-                    pattern = r'"\s*(.*?)\s*"\s*\(abstract_(\d+)\)'
+                    pattern = r'-\s*[\"\u201c\u201d]?\s*(.*?)\s*[\"\u201c\u201d]?\s*\([Aa]bstract[_\s]*(\d+)\)'
 
                     supporting_texts = []
                     for item in supporting:
@@ -1297,4 +1298,3 @@ elif page == "Video check":
             st_echarts(
             options=options, height="500px",
             )
-
