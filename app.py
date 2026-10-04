@@ -22,7 +22,10 @@ from streamlit_option_menu import option_menu
 
 ###### CONFIGURATIONS ######
 # Debug mode
-debug = False
+debug = True
+
+# LLM Model
+LLM_MODEL = "meta/llama-3.2-11b-vision-instruct"
 
 # File paths
 embeddings_file = r"data\abstract_embeddings.npy"
@@ -195,23 +198,23 @@ def parse_response(response):
 
     # Regular expression patterns for extracting fields
     patterns = {
-        "first_label": r"Label:\s*(.*?)\n",
-        "justification": r"Justification:\s*(.*?)(?=\nSupporting sentences)",
-        "supporting": r"Supporting sentences from abstracts:\n(.*?)(?=\nRefusing sentences)",
-        "refusing": r"Refusing sentences from abstracts:\n(.*?)(?=\nNote:)",
-        "notes": r"Note:\s*(.*)"
+        "first_label": r"(?:Label|Etichetta):\s*(.*?)\n",
+        "justification": r"(?:Justification|Giustificazione):\s*(.*?)(?=\n(?:Supporting sentences|Frasi di supporto|Refusing sentences|Frasi di rifiuto))",
+        "supporting": r"(?:Supporting sentences from abstracts|Frasi di supporto dai documenti):\n(.*?)(?=\n(?:Refusing sentences|Frasi di rifiuto))",
+        "refusing": r"(?:Refusing sentences from abstracts|Frasi di rifiuto dai documenti):\n(.*?)(?=\n(?:Note|Nota):|$)",
+        "notes": r"(?:Note|Nota):\s*(.*)"
     }
 
     # Extract the fields using regular expressions
-    if match := re.search(patterns["first_label"], response, re.DOTALL):
+    if match := re.search(patterns["first_label"], response, re.DOTALL | re.IGNORECASE):
         first_label = match.group(1).strip()
-    if match := re.search(patterns["justification"], response, re.DOTALL):
+    if match := re.search(patterns["justification"], response, re.DOTALL | re.IGNORECASE):
         justification = match.group(1).strip()
-    if match := re.search(patterns["supporting"], response, re.DOTALL):
-        supporting = [{"text": sentence.strip(), "abstract": f"abstract_{i+1}"} for i, sentence in enumerate(match.group(1).strip().split('\n'))]
-    if match := re.search(patterns["refusing"], response, re.DOTALL):
-        refusing = [{"text": sentence.strip(), "abstract": f"abstract_{i+1}"} for i, sentence in enumerate(match.group(1).strip().split('\n'))]
-    if match := re.search(patterns["notes"], response, re.DOTALL):
+    if match := re.search(patterns["supporting"], response, re.DOTALL | re.IGNORECASE):
+        supporting = [{"text": sentence.strip(), "abstract": f"abstract_{i+1}"} for i, sentence in enumerate(match.group(1).strip().split('\n')) if sentence.strip()]
+    if match := re.search(patterns["refusing"], response, re.DOTALL | re.IGNORECASE):
+        refusing = [{"text": sentence.strip(), "abstract": f"abstract_{i+1}"} for i, sentence in enumerate(match.group(1).strip().split('\n')) if sentence.strip()]
+    if match := re.search(patterns["notes"], response, re.DOTALL | re.IGNORECASE):
         notes = match.group(1).strip()
 
     # Return the extracted fields
@@ -365,6 +368,8 @@ def llm_reasoning_template(query):
     Label can be yes, no, NEI, where yes: claim is true. no: claim is false. NEI: not enough information.
     The Label will be chosen with a voting system of support/refuse before.
 
+    Please write the Justification and Note in the same language as the user's question, but strictly keep the structural section titles ('Label:', 'Justification:', 'Supporting sentences from abstracts:', 'Refusing sentences from abstracts:', 'Note:') in English.
+
     [/INST] <</SYS>>
 
     [INST] Question: {query} [/INST]
@@ -475,6 +480,7 @@ if page == "Single claim check":
                     globals()[f"distance_{i}"] = distance
 
                 with st.spinner('🔍 We are checking...'):
+                    answer = "Errore: impossibile contattare il modello." # Inizializzata fuori dal try
                     try:
                         # Retrieve the question from the DataFrame
                         query = st.session_state.claim
@@ -489,7 +495,7 @@ if page == "Single claim check":
 
                         # Call the API
                         completion = client.chat.completions.create(
-                            model="meta/llama-3.1-405b-instruct",
+                            model=LLM_MODEL ,
                             messages=[{"role": "user", "content": prompt_template}],
                             temperature=0.1,
                             top_p=0.7,
@@ -546,7 +552,7 @@ if page == "Single claim check":
                     for i in range(1, len(st.session_state.top_abstracts) + 1):
                         abstracts[f"abstract_{i}"] = globals()[f"abstract_{i}"]
 
-                    pattern = r'"\s*(.*?)\s*"\s*\(abstract_(\d+)\)'
+                    pattern = r'"\s*(.*?)\s*"\s*\([Aa]bstract[_\s]*(\d+)\)'
 
                     supporting_texts = []
                     for item in supporting:
@@ -659,7 +665,7 @@ elif page == "Page check":
 
                 # Call the API
                 completion = client.chat.completions.create(
-                    model="meta/llama-3.1-405b-instruct",
+                    model=LLM_MODEL ,
                     messages=[{"role": "user", "content": prompt_template}],
                     temperature=0.1,
                     top_p=0.7,
@@ -721,7 +727,7 @@ elif page == "Page check":
 
                         # Call the API
                         completion = client.chat.completions.create(
-                            model="meta/llama-3.1-405b-instruct",
+                            model=LLM_MODEL ,
                             messages=[{"role": "user", "content": prompt_template}],
                             temperature=0.1,
                             top_p=0.7,
@@ -1001,7 +1007,7 @@ elif page == "Video check":
 
                 # Call the API
                 completion = client.chat.completions.create(
-                    model="meta/llama-3.1-405b-instruct",
+                    model=LLM_MODEL ,
                     messages=[{"role": "user", "content": prompt_template}],
                     temperature=0.1,
                     top_p=0.7,
@@ -1064,7 +1070,7 @@ elif page == "Video check":
 
                         # Call the API
                         completion = client.chat.completions.create(
-                            model="meta/llama-3.1-405b-instruct",
+                            model=LLM_MODEL ,
                             messages=[{"role": "user", "content": prompt_template}],
                             temperature=0.1,
                             top_p=0.7,
