@@ -3,6 +3,7 @@ import os
 import faiss
 import whisper
 import ffmpeg
+import imageio_ffmpeg #aggiunta
 import tempfile
 import requests
 import numpy as np
@@ -21,6 +22,14 @@ from streamlit_option_menu import option_menu
 # https://newssalutebenessere.altervista.org/covid-19-just-a-simple-flue-or-something-else/     False Claim
 
 ###### CONFIGURATIONS ######
+# Recupera il percorso dell'eseguibile ffmpeg incluso nel pacchetto Python
+ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
+ffmpeg_dir = os.path.dirname(ffmpeg_path)
+
+# Aggiunge dinamicamente la cartella al PATH di sistema per questa singola sessione Python
+if ffmpeg_dir not in os.environ["PATH"]:
+    os.environ["PATH"] += os.pathsep + ffmpeg_dir
+
 # Debug mode
 debug = True
 
