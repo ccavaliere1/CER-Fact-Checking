@@ -24,11 +24,6 @@ from streamlit_option_menu import option_menu
 ###### CONFIGURATIONS ######
 # Recupera il percorso dell'eseguibile ffmpeg incluso nel pacchetto Python
 ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
-ffmpeg_dir = os.path.dirname(ffmpeg_path)
-
-# Aggiunge dinamicamente la cartella al PATH di sistema per questa singola sessione Python
-if ffmpeg_dir not in os.environ["PATH"]:
-    os.environ["PATH"] += os.pathsep + ffmpeg_dir
 
 # Debug mode
 debug = True
@@ -998,8 +993,9 @@ elif page == "Video check":
             
             # Extract the audio from the video
             temp_audio_path = tempfile.NamedTemporaryFile(delete=False, suffix=".wav").name
-            ffmpeg.input(temp_video_path).output(temp_audio_path, acodec="pcm_s16le", ar=16000, ac=1).run(overwrite_output=True)
-            
+            #ffmpeg.input(temp_video_path).output(temp_audio_path, acodec="pcm_s16le", ar=16000, ac=1).run(overwrite_output=True)
+            ffmpeg.input(temp_video_path).output(temp_audio_path, acodec="pcm_s16le", ar=16000, ac=1).run(cmd=ffmpeg_path, overwrite_output=True)
+
             # Transcribe the audio
             model1 = whisper.load_model("small")
             result = model1.transcribe(temp_audio_path)
