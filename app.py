@@ -93,15 +93,21 @@ def extract_and_split_claims(claims):
     Returns:
         dict: Dictionary containing the extracted claims.
     """
-    start_index = claims.find("Claim 1:")
-    if start_index != -1:
-        claims = claims[start_index:]
-
-    claim_lines = claims.strip().split("\n\n")
-
+    # Cerca tutti i pattern del tipo "Claim X: testo..." gestendo anche i singoli invi
+    pattern = r'(?:Claim|claim)\s*(\d+)[:\.]\s*(.*?)(?=(?:Claim|claim)\s*\d+[:\.]|$)'
+    matches = re.findall(pattern, claims, re.DOTALL)
+    
     claims_dict = {}
-    for i, claim in enumerate(claim_lines, start=1):
-        claims_dict[f"Claim_{i}"] = claim
+    if matches:
+        for match in matches:
+            claim_num = match[0]
+            claim_text = match[1].strip()
+            # Rimuoviamo eventuali interruzioni di linea indesiderate all'interno dello stesso claim
+            claim_text = re.sub(r'\s+', ' ', claim_text)
+            claims_dict[f"Claim_{claim_num}"] = claim_text
+    else:
+        # Fallback di sicurezza nel caso in cui il formato vari del tutto
+        claims_dict["Claim_1"] = claims.strip()
 
     for var_name, claim_text in claims_dict.items():
         globals()[var_name] = claim_text
