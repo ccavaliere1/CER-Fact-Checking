@@ -1,0 +1,263 @@
+Estraggo dal PDF la sezione 3 e la confronto con README e implementazione, per spiegare cosa misura ciascun esperimento e quali parti sono effettivamente riproducibili nel repository.
+
+Nel paper `2509.13888v1.pdf`, la sezione **3 – Experiments** serve a verificare sperimentalmente se il sistema CER riesce a svolgere correttamente il fact-checking biomedico. Non descrive un singolo esperimento, ma una valutazione articolata dei diversi componenti della pipeline.
+
+## 3.1 Dataset
+
+Gli autori valutano CER su tre benchmark:
+
+- **HealthFC**, con claim biomedici annotati e spiegazioni provenienti da articoli di fact-checking;
+- **BioASQ-7b**, con domande/claim biomedici e relative evidenze scientifiche;
+- **SciFact**, con claim scientifici annotati come supportati, contraddetti o non verificabili, insieme ai documenti e alle frasi di evidenza.
+
+Lo scopo è verificare il comportamento del sistema su dataset diversi:
+
+- HealthFC rappresenta il fact-checking di informazioni sanitarie divulgative;
+- BioASQ rappresenta domande e conoscenza biomedica specialistica;
+- SciFact valuta in modo più strutturato il rapporto tra claim, documento scientifico ed evidenza testuale.
+
+Questa parte è importante perché CER non viene valutato soltanto su esempi creati dagli autori, ma su benchmark già usati dalla comunità scientifica.
+
+## 3.2 Cosa viene valutato
+
+Gli esperimenti misurano principalmente tre capacità.
+
+### 1. Recupero dell’evidenza
+
+Dato un claim, CER deve trovare gli articoli PubMed più rilevanti.
+
+Il sistema:
+
+1. trasforma il claim in una rappresentazione vettoriale;
+2. cerca documenti simili nel corpus scientifico;
+3. recupera i primi documenti, nel codice normalmente `top_k=5`;
+4. passa gli abstract recuperati alla fase successiva.
+
+Nel repository questo comportamento è implementato dalla funzione:
+
+```python
+retrieve_top_abstracts(...)
+```
+
+La ricerca usa:
+
+```python
+SentenceTransformer("all-MiniLM-L6-v2")
+```
+
+e un indice FAISS con similarità vettoriale.
+
+Nel paper viene inoltre menzionato il confronto tra metodi di retrieval **sparse** e **dense**:
+
+- sparse retrieval: ricerca basata sulle parole, ad esempio BM25;
+- dense retrieval: ricerca basata sugli embedding semantici.
+
+Quindi non si valuta soltanto se la classificazione finale sia corretta, ma anche se il sistema recuperi documenti utili a sostenerla.
+
+### 2. Classificazione della veridicità
+
+Una volta recuperati gli abstract, CER deve assegnare al claim una delle categorie previste:
+
+- claim vero/supportato;
+- claim falso/contraddetto;
+- **NEI**, cioè *Not Enough Information*.
+
+Nel codice queste classi sono rappresentate come:
+
+```python
+Class = ["True", "False", "NEI"]
+```
+
+La decisione viene prodotta in due passaggi:
+
+1. un LLM genera una spiegazione utilizzando gli abstract recuperati;
+2. un classificatore zero-shot valuta il claim sulla base della spiegazione.
+
+Il classificatore utilizzato nel codice è:
+
+```python
+MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33
+```
+
+Il paper, invece, cita anche modelli e componenti come PubMedBERT, retrieval e LLM. Per replicare esattamente i risultati bisogna verificare nella sezione sperimentale quale combinazione sia stata utilizzata per ciascuna tabella.
+
+### 3. Generazione della spiegazione
+
+CER non restituisce solamente una label. Deve anche produrre una giustificazione indicando:
+
+- perché il claim è supportato;
+- perché è contraddetto;
+- oppure perché le informazioni non sono sufficienti.
+
+Il prompt usato nell’applicazione chiede all’LLM di fornire:
+
+```text
+Label:
+Justification:
+Supporting sentences from abstracts:
+Refusing sentences from abstracts:
+Note:
+```
+
+Inoltre impone che le frasi di supporto e rifiuto siano copiate dagli abstract. L’applicazione evidenzia poi queste frasi nell’interfaccia.
+
+Questa è una valutazione qualitativa della trasparenza e dell’interpretabilità del sistema, non soltanto una misura numerica di accuratezza.
+
+## 3.3 Confronto con i metodi esistenti
+
+La sezione Experiments confronta CER con sistemi o modelli precedenti utilizzati sugli stessi benchmark.
+
+Il confronto serve a rispondere alla domanda:
+
+> CER migliora effettivamente lo stato dell’arte oppure produce soltanto spiegazioni più leggibili?
+
+Le metriche principali sono normalmente:
+
+- precision;
+- recall;
+- F1-score;
+- eventualmente accuracy.
+
+Il paper enfatizza soprattutto il miglioramento dell’**F1-score** rispetto ai metodi precedenti.
+
+L’F1 è utile perché combina precision e recall:
+
+\[
+F1 = 2 \cdot \frac{Precision \cdot Recall}{Precision + Recall}
+\]
+
+Per classificazione multiclass, è necessario capire se il paper usa:
+
+- F1 per classe;
+- macro-F1;
+- micro-F1;
+- weighted-F1.
+
+Non sono valori intercambiabili. Per questo, quando confronti i tuoi risultati con le tabelle del paper, devi usare esattamente la stessa variante.
+
+## Come leggere concretamente gli esperimenti
+
+La logica della valutazione può essere rappresentata così:
+
+```text
+claim del dataset
+        |
+        v
+recupero degli abstract scientifici
+        |
+        v
+generazione della spiegazione
+        |
+        v
+classificazione True / False / NEI
+        |
+        v
+confronto con la label gold
+        |
+        v
+precision, recall, F1
+```
+
+Per SciFact occorre aggiungere un livello:
+
+```text
+claim
+  |
+  v
+documenti recuperati
+  |
+  v
+frasi di evidenza recuperate
+  |
+  v
+SUPPORT / CONTRADICT / NEI
+```
+
+Quindi, su SciFact, non basta confrontare soltanto la label finale. Bisogna anche controllare se il sistema ha recuperato il documento e le frasi corrette.
+
+## Cosa puoi replicare con i file disponibili
+
+### SciFact
+
+Con questi file:
+
+```text
+data\SciFact - data\claims_train.jsonl
+data\SciFact - data\claims_dev.jsonl
+data\SciFact - data\claims_test.jsonl
+data\SciFact - data\corpus.jsonl
+```
+
+puoi replicare:
+
+1. il retrieval dei documenti;
+2. il retrieval delle frasi;
+3. la classificazione `SUPPORT`, `CONTRADICT` e `NEI`;
+4. il calcolo delle metriche sul test set.
+
+Però devi costruire un indice specifico sul corpus SciFact. L’indice già presente:
+
+```text
+data\faiss_index.index
+```
+
+è associato al corpus PubMed di `parte_205.csv`, quindi non è l’indice corretto per SciFact.
+
+### HealthFC
+
+Con:
+
+```text
+data\HealtFc - data.csv
+```
+
+puoi replicare la classificazione dei claim, ma devi prima:
+
+- verificare il significato delle label numeriche;
+- scegliere una sola lingua;
+- definire lo split corretto;
+- stabilire quali colonne contengano il testo da classificare e la risposta gold.
+
+Il file contiene anche spiegazioni e frasi di supporto, quindi può essere usato per una valutazione qualitativa delle giustificazioni.
+
+### BioASQ
+
+Nel repository non risulta presente il dataset BioASQ-7b completo. Senza la versione esatta usata dagli autori, gli split e le annotazioni, non è possibile replicare fedelmente la parte BioASQ.
+
+## Differenza tra il paper e il repository
+
+Il repository contiene principalmente una **demo interattiva**. La demo:
+
+- prende un claim inserito dall’utente;
+- recupera cinque abstract dal corpus PubMed locale;
+- chiama un LLM remoto;
+- classifica la risposta;
+- mostra una spiegazione.
+
+Non contiene invece chiaramente:
+
+- uno script ufficiale di valutazione sui tre benchmark;
+- le predizioni salvate degli autori;
+- una configurazione completa per ogni esperimento;
+- gli script per calcolare tutte le tabelle;
+- il codice di training o fine-tuning necessario per ogni modello citato nel paper.
+
+Di conseguenza, puoi replicare la **pipeline concettuale** descritta nella sezione 3, ma non necessariamente ottenere gli stessi numeri senza ricostruire:
+
+```text
+dataset originale
++ split originale
++ preprocessing
++ modello corretto
++ retrieval corretto
++ prompt corretto
++ parametri
++ metrica corretta
+```
+
+La cosa più importante da capire è che la sezione 3 non dimostra soltanto che CER “risponde” ai claim. Dimostra separatamente che il sistema:
+
+1. recupera evidenza scientifica pertinente;
+2. usa tale evidenza per classificare il claim;
+3. produce una spiegazione leggibile;
+4. ottiene risultati competitivi rispetto ai metodi precedenti sui benchmark HealthFC, BioASQ e SciFact.
