@@ -36,12 +36,14 @@ Il sistema:
 Nel repository questo comportamento è implementato dalla funzione:
 
 ```python
-retrieve_top_abstracts(...)
+def retrieve_top_abstracts(claim, top_k=5):
+    # Implementazione per il recupero degli abstract
+    pass
 ```
 
 La ricerca usa:
 
-```python
+```
 SentenceTransformer("all-MiniLM-L6-v2")
 ```
 
@@ -75,7 +77,7 @@ La decisione viene prodotta in due passaggi:
 
 Il classificatore utilizzato nel codice è:
 
-```python
+```
 MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33
 ```
 

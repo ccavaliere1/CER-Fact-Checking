@@ -509,7 +509,7 @@ if page == "Single claim check":
         if st.session_state.claim:
             # Retrieve the top abstracts for the claim
             top_abstracts = retrieve_top_abstracts(st.session_state.claim, model, index, pmids, data, top_k=5)
-            st.session_state.top_abstracts = top_abstracts
+            st.session_state.top_abstracts = top_abstracts # (abstract, pmid, distance)
 
             st.markdown("### **Results**")
 
