@@ -58,8 +58,46 @@ def load_audio_for_whisper(file_path, sample_rate=16000):
 # Debug mode
 debug = True
 
+# LOCAL MODE
+LOCAL = True
+
 # LLM Model
-LLM_MODEL = "meta/llama-3.2-11b-vision-instruct"
+if LOCAL:
+    # MODELLI LOCALI SULLA MACCHINA DI GIANFRANCO
+    LLM_MODEL = "bartowski/Qwen2.5-7B-Instruct-GGUF:Q6_K" # molto pesante 11.5GB, ma funziona lentamente
+    # LLM_MODEL = "bartowski/Qwen2.5-7B-Instruct-GGUF:Q4_K_M" #(IL MIGLIORE) medio peso 7.6GB, ma funziona velocemente
+    # LLM_MODEL = "unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF:Q5_K_M" #ha formattato male
+    # LLM_MODEL = "unsloth/gemma-4-E2B-it-GGUF:Q8_0" # basso peso 5gbgb, non trova risultati
+
+    # Initialize OpenAI API client
+    client = OpenAI(
+        base_url="http://127.0.0.1:9931/v1",
+        api_key="local"
+    )
+else:
+    # MODELLI SCARTATI
+    # LLM_MODEL = "nvidia/nemotron-3.5-lightning-30b-a3b"
+    # LLM_MODEL = "z-ai/glm-5.3-flash" # We are checking all'infinito
+    # LLM_MODEL = "openai/gpt-oss-20b" # Error processing index: list index out of range
+    # LLM_MODEL = "google/gemma-4-31b-it" # We are checking all'infinito
+    # LLM_MODEL = "deepseek-ai/deepseek-v4.1-flash" # We are checking all'infinito
+
+    # -----------------------------------------------------------------------------
+    # MODELLI TEXT-TO-TEXT disponibili su https://build.nvidia.com/models?label=text-to-text
+    # LLM_MODEL = "google/diffusiongemma-26b-a4b-it" # funziona ma senza giustificazioni
+
+    # probabilmente non funziona perché non riuesce a raggungere il modello
+    # LLM_MODEL = "meta/muse-glimmer-30b" # funziona, ma non trova alcun risultato (sembra raggiungerlo)
+    # LLM_MODEL = "stepfun-ai/step-5-preview" # funziona, ma non trova alcun risultato (sembra raggiungerlo)
+    # LLM_MODEL = "minimaxai/minimax-m3.1-flash" # funziona, ma non trova alcun risultato (sembra raggiungerlo)
+    # LLM_MODEL = "mistralai/mistral-large-4-1t-a52b" # funziona, ma non trova alcun risultato (sembra raggiungerlo)
+
+
+    # Initialize OpenAI API client
+    client = OpenAI(
+        base_url="https://integrate.api.nvidia.com/v1",
+        api_key=st.secrets.nvidia.api_key
+    )
 
 # File paths
 embeddings_file = r"data\abstract_embeddings.npy"
@@ -67,11 +105,6 @@ pmid_file = r"data\pmids.npy"
 faiss_index_file = r"data\faiss_index.index"
 file_path = r'data\parte_205.csv'
 
-# Initialize OpenAI API client
-client = OpenAI(
-    base_url="https://integrate.api.nvidia.com/v1",
-    api_key=st.secrets.nvidia.api_key
-)
 
 # Load data
 data = pd.read_csv(file_path)
