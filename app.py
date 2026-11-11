@@ -84,7 +84,7 @@ else:
 
     # -----------------------------------------------------------------------------
     # MODELLI TEXT-TO-TEXT disponibili su https://build.nvidia.com/models?label=text-to-text
-    # LLM_MODEL = "google/diffusiongemma-26b-a4b-it" # funziona ma senza giustificazioni
+    LLM_MODEL = "google/diffusiongemma-26b-a4b-it" # funziona ma senza giustificazioni
 
     # probabilmente non funziona perché non riuesce a raggungere il modello
     # LLM_MODEL = "meta/muse-glimmer-30b" # funziona, ma non trova alcun risultato (sembra raggiungerlo)
