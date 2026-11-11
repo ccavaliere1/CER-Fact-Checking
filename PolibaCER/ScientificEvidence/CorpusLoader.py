@@ -3,6 +3,7 @@ from pathlib import Path
 import faiss
 import numpy as np
 
+# ----------------------------------------------- CORPUS LOADER ------------------------------------------------ #
 def load_scifact_corpus(corpus_path):
     """
     Carica il corpus SciFact.
@@ -30,26 +31,59 @@ def load_scifact_corpus(corpus_path):
     doc_ids = np.array(list(documents.keys()), dtype=np.int64)
     return documents, doc_ids
 
-
-def build_scifact_index(corpus_path, model):
+def build_scifact_index(model, data_path, NEW_INDEX=False):
     """
     Costruisce un indice FAISS sul corpus SciFact.
 
     La similarità utilizzata è il prodotto interno tra vettori normalizzati, equivalente alla cosine similarity.
     """
-    documents, doc_ids = load_scifact_corpus(corpus_path)
 
+    # Se tutti i file esistono, carica gli embedding e l'indice FAISS
+    corpus_path = Path(data_path) / "corpus.jsonl"
+    faiss_index_path = Path(data_path) / "faiss_index.index"
+
+    # Carica il corpus SciFact
+    documents, doc_ids = load_scifact_corpus(corpus_path)
     texts = [documents[int(doc_id)]["text"] for doc_id in doc_ids]
 
-    embeddings = model.encode(
-        texts,
-        convert_to_numpy=True,
-        normalize_embeddings=True,
-        show_progress_bar=True,
-    ).astype("float32")
 
-    dimension = embeddings.shape[1]
-    index = faiss.IndexFlatIP(dimension)
-    index.add(embeddings)
+
+    if faiss_index_path.is_file() and not NEW_INDEX:
+        print("Caricamento degli embedding e dell'indice FAISS esistenti...")
+        index = load_index(data_path)
+    else:
+        print("Costruzione di nuovi embedding e indice FAISS...")
+
+        embeddings = model.encode(
+            texts,
+            convert_to_numpy=True,
+            normalize_embeddings=True,
+            show_progress_bar=True,
+        ).astype("float32")
+
+        dimension = embeddings.shape[1]
+        index = faiss.IndexFlatIP(dimension)
+        index.add(embeddings)
+
+        # Salva gli embedding, i doc_id e l'indice FAISS
+        save_index(index, data_path)
+
 
     return documents, doc_ids, index
+
+# ----------------------------------------------- END CORPUS LOADER ----------------------------------------------- #
+
+# ----------------------------------------------- EMBEDDING UTILS ------------------------------------------------ #
+def save_index(index, data_path):
+    faiss_index_file = Path(data_path) / "faiss_index.index"
+    faiss.write_index(index, str(faiss_index_file))
+
+def load_index(data_path):
+
+    faiss_index_file = Path(data_path) / "faiss_index.index"
+
+    if not faiss_index_file.is_file():
+        raise FileNotFoundError(f"Indice FAISS non trovato: {faiss_index_file}")
+
+    index = faiss.read_index(str(faiss_index_file))
+    return index

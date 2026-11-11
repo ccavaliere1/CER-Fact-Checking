@@ -1,4 +1,4 @@
-﻿Per replicare i risultati di **SciFact** devi realizzare una pipeline sperimentale separata dalla demo Streamlit. L’obiettivo è riprodurre questa sequenza:
+Per replicare i risultati di **SciFact** devi realizzare una pipeline sperimentale separata dalla demo Streamlit. L’obiettivo è riprodurre questa sequenza:
 
 ```text
 claim SciFact
