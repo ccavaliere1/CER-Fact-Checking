@@ -1,0 +1,3 @@
+{"id": 0, "claim": "0-dimensional biomaterials lack inductive properties.", "evidence": {}, "cited_doc_ids": [31715818]}
+{"id": 2, "claim": "1 in 5 million in UK have abnormal PrP positivity.", "evidence": {"13734012": [{"sentences": [4], "label": "CONTRADICT"}]}, "cited_doc_ids": [13734012]}
+{"id": 9, "claim": "32% of liver transplantation programs required patients to discontinue methadone treatment in 2001.", "evidence": {"44265107": [{"sentences": [15], "label": "SUPPORT"}]}, "cited_doc_ids": [44265107]}
