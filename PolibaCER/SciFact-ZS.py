@@ -1,12 +1,12 @@
 ﻿from pathlib import Path
 from sentence_transformers import SentenceTransformer
-from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.metrics import classification_report
 from transformers import pipeline
 from PolibaCER.DataLoader.CorpusLoader import build_scifact_index
-from PolibaCER.FactCheck.Retriver import retrieve_top_abstracts
+from PolibaCER.FactCheck.Retriver import retrieve_scifact_top_abstracts
 from PolibaCER.FactCheck.Reasoning import reason_model_response
 from PolibaCER.FactCheck.Justifyer import parse_response, generate_justification
-from PolibaCER.FactCheck.Response import extract_label_and_score, extract_supporting_and_refusing_sentences, proccess_abstracts
+from PolibaCER.FactCheck.Response import extract_label_and_score
 from openai import OpenAI
 import json
 
@@ -37,6 +37,7 @@ else:
 # -------------------------------------------- DATA SETUP ------------------------------------------- #
 def get_zeroshoot_claim_and_labels(data_path):
     CLAIMS_DEV_PATH = data_path / "claims_dev.jsonl"
+    # CLAIMS_DEV_PATH = data_path / "claims_train_snap.jsonl"
 
     claims = []
     labels = []
@@ -119,13 +120,13 @@ if __name__ == "__main__":
     for claim in claims:
 
         # ------------------------------------------- RETRIEVE TOP ABSTRACTS ------------------------------------------- #
-        top_abstracts = retrieve_top_abstracts(
+        top_abstracts = retrieve_scifact_top_abstracts(
             claim=claim,
             model=MODEL,
             index=index,
             doc_ids=doc_ids,
             documents=documents,
-            top_k=5,
+            top_k=5
         )
 
         # IMPOSTAZIONE VALORI GLOBALI PER GLI ABSTRACTS
@@ -162,10 +163,10 @@ if __name__ == "__main__":
             "confidence": confidence,
         }
 
-    for claim, result in results.items():
-        print(f"Claim: {claim}")
-        print(f"Predicted Label: {predicted_label} | Confidence: {confidence} ---> Label from dataset: {labels[claims.index(claim)]}")
-        print("-" * 20)
+    # for claim, result in results.items():
+    #     print(f"Claim: {claim}")
+    #     print(f"Predicted Label: {predicted_label} | Confidence: {confidence} ---> Label from dataset: {labels[claims.index(claim)]}")
+    #     print("-" * 20)
 
 
     # ------------------------------------------- CONFUSION MATRIX ------------------------------------------- #

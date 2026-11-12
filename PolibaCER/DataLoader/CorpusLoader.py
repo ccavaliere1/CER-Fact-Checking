@@ -1,9 +1,39 @@
 ﻿import json
+import os
 from pathlib import Path
 import faiss
 import numpy as np
 
-# ----------------------------------------------- CORPUS LOADER ------------------------------------------------ #
+# ----------------------------------------------- PUBMED EMBEDDINGS LOADER ------------------------------------------------ #
+def load_pubmed_embeddings(embeddings_file, pmid_file, faiss_index_file, debug=False):
+    """
+    Load embeddings, PMIDs, and FAISS index from the specified files.
+
+    Args:
+        embeddings_file (str): File path for the embeddings.
+        pmid_file (str): File path for the PMIDs.
+        faiss_index_file (str): File path for the FAISS index.
+
+    Returns:
+        tuple: Tuple containing the embeddings, PMIDs, and FAISS index.
+    """
+    # Check if the files exist
+    if not (os.path.exists(embeddings_file) and os.path.exists(pmid_file) and os.path.exists(faiss_index_file)):
+        raise FileNotFoundError("One or more files not found. Please check the file paths.")
+
+    # Load the embeddings and PMIDs
+    embeddings = np.load(embeddings_file)
+    pmids = np.load(pmid_file, allow_pickle=True)
+
+    # Load the FAISS index
+    index = faiss.read_index(faiss_index_file)
+
+    return embeddings, pmids, index
+# ----------------------------------------------- END PUBMED EMBEDDINGS LOADER ------------------------------------------------ #
+
+
+
+# ----------------------------------------------- SCIFACT CORPUS LOADER ------------------------------------------------ #
 def load_scifact_corpus(corpus_path):
     """
     Carica il corpus SciFact.
@@ -71,9 +101,9 @@ def build_scifact_index(model, data_path, NEW_INDEX=False):
 
     return documents, doc_ids, index
 
-# ----------------------------------------------- END CORPUS LOADER ----------------------------------------------- #
+# ----------------------------------------------- END SCIFACT CORPUS LOADER ----------------------------------------------- #
 
-# ----------------------------------------------- EMBEDDING UTILS ------------------------------------------------ #
+# ----------------------------------------------- SCIFACT INDEX UTILS ------------------------------------------------ #
 def save_index(index, data_path):
     faiss_index_file = Path(data_path) / "faiss_index.index"
     faiss.write_index(index, str(faiss_index_file))

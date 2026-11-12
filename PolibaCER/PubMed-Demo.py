@@ -1,17 +1,21 @@
-﻿from pathlib import Path
+﻿import pandas as pd
 from sentence_transformers import SentenceTransformer
 from transformers import pipeline
-from PolibaCER.DataLoader.CorpusLoader import build_scifact_index
-from PolibaCER.FactCheck.Retriver import retrieve_top_abstracts
+from PolibaCER.DataLoader.CorpusLoader import load_pubmed_embeddings
+from PolibaCER.FactCheck.Retriver import retrieve_pubmed_top_abstracts
 from PolibaCER.FactCheck.Reasoning import reason_model_response
 from PolibaCER.FactCheck.Justifyer import parse_response, generate_justification
 from PolibaCER.FactCheck.Response import extract_label_and_score, extract_supporting_and_refusing_sentences, proccess_abstracts
-from ClaimDetection import input_claim_text
+from PolibaCER.FactCheck.ClaimDetection import input_claim_text
 from openai import OpenAI
 
 
 # -------------------------------------------- GLOBAL VARIABLES ------------------------------------------- #
-DATA_PATH = Path(__file__).resolve().parent / "data" / "SciFact"
+embeddings_file = r"data\PubMed\abstract_embeddings.npy"
+pmid_file = r"data\PubMed\pmids.npy"
+faiss_index_file = r"data\PubMed\faiss_index.index"
+file_path = r'data\PubMed\parte_205.csv'
+
 MODEL = SentenceTransformer("all-MiniLM-L6-v2")
 ZEROSHOT_CLASSIFIER_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33"
 LOCAL = True
@@ -37,12 +41,10 @@ else:
 # -------------------------------------------- MAIN FUNCTION ------------------------------------------- #
 if __name__ == "__main__":
 
-    # ------------------------------------------- BUILD SCI-FACT INDEX ------------------------------------------- #
-    documents, doc_ids, index = build_scifact_index(
-        model=MODEL,
-        data_path=DATA_PATH,
-        NEW_INDEX=False,
-    )
+    # ------------------------------------------- LOAD DATA ------------------------------------------- #
+    # Load data
+    data = pd.read_csv(file_path)
+    embeddings, pmids, index = load_pubmed_embeddings(embeddings_file, pmid_file, faiss_index_file)
 
 
     # ------------------------------------------- CLAIM INPUT ------------------------------------------- #
@@ -50,28 +52,22 @@ if __name__ == "__main__":
 
 
     # ------------------------------------------- RETRIEVE TOP ABSTRACTS ------------------------------------------- #
-    top_abstracts = retrieve_top_abstracts(
-        claim=claim,
-        model=MODEL,
-        index=index,
-        doc_ids=doc_ids,
-        documents=documents,
-        top_k=5,
-    )
+    top_abstracts = retrieve_pubmed_top_abstracts(claim=claim, model=MODEL, index=index, pmids=pmids, data=data, top_k=5)
 
     # IMPOSTAZIONE VALORI GLOBALI PER GLI ABSTRACTS
     print("\n------------------------------------------- TOP ABSTRACTS -------------------------------------------")
-    for i, result in enumerate(top_abstracts, start=1):
-        globals()[f"abstract_{i}"] = result['abstract']
-        globals()[f"docs_id{i}"] = result['doc_id']
-        globals()[f"distance_{i}"] = result['distance']
+    for i, (abstract, pmid, distance) in enumerate(top_abstracts, 1):
+        pubmed_url = f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/"
+        globals()[f"abstract_{i}"] = abstract
+        globals()[f"reference_{i}"] = pubmed_url
+        globals()[f"distance_{i}"] = distance
 
         # PRINT RESULTS
-        print(f"\n[{i}] doc_id={result['doc_id']}")
-        print(f"Distance: {result['distance']:.4f}")
-        print(f"Titolo: {result['title']}")
-        print(f"Abstract: {result['abstract']}")
-    print("\n---------------------------------------------------------------------------------------------------\n")
+        print(f"\n[{i}] doc_id={pmid}")
+        print(f"Abstract: {abstract}")
+        print(f"Reference: {pubmed_url}")
+        print(f"Distance: {distance:.4f}")
+    print("---------------------------------------------------------------------------------------------------")
 
 
     # ------------------------------------------- PROCESSING OF THE TOP ABSTRACTS -------------------------------------------#
@@ -90,12 +86,12 @@ if __name__ == "__main__":
 
     # Justification Results
     print("\n------------------------------------------- JUSTIFICATION RESULTS -------------------------------------------")
-    print(f"\n\nLabel: {first_label}")
+    print(f"Label: {first_label}")
     print(f"Justification: {justification}")
     print(f"Supporting sentences from abstracts: {supporting}")
     print(f"Refusing sentences from abstracts: {refusing}")
     print(f"Note: {notes}")
-    print("\n-----------------------------------------------------------------------------------------------------------\n")
+    print("-------------------------------------------------------------------------------------------------------------")
 
 
     # ----------------------------------------- CREATE FINAL RESPONSE ----------------------------------------- #
@@ -109,7 +105,7 @@ if __name__ == "__main__":
     processed_abstracts, refusing_matches = proccess_abstracts(abstracts, supporting, refusing)
 
     print("\n------------------------------------------- FINAL RESULTS -------------------------------------------")
-    print(f"\nClaim: {claim}")
+    print(f"Claim: {claim}")
     print(f"Predicted Label: {predicted_label}")
     print(f"Confidence Score: {confidence}")
     print("\nProcessed Abstracts:")
@@ -125,4 +121,4 @@ if __name__ == "__main__":
         for match in refusing_matches:
             print(f"{match['abstract']}: {match['text']}")
 
-    print("\n---------------------------------------------------------------------------------------------------\n")
+    print("---------------------------------------------------------------------------------------------------")
