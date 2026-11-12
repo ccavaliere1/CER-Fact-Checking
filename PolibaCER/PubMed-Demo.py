@@ -1,4 +1,6 @@
-﻿import pandas as pd
+﻿from pathlib import Path
+
+import pandas as pd
 from sentence_transformers import SentenceTransformer
 from transformers import pipeline
 from PolibaCER.DataLoader.CorpusLoader import load_pubmed_embeddings
@@ -11,10 +13,13 @@ from openai import OpenAI
 
 
 # -------------------------------------------- GLOBAL VARIABLES ------------------------------------------- #
-embeddings_file = r"data\PubMed\abstract_embeddings.npy"
-pmid_file = r"data\PubMed\pmids.npy"
-faiss_index_file = r"data\PubMed\faiss_index.index"
-file_path = r'data\PubMed\parte_205.csv'
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA_PATH = PROJECT_ROOT / "data"
+
+embeddings_file = str(DATA_PATH) + "\\abstract_embeddings.npy"
+pmid_file = str(DATA_PATH) + "\\pmids.npy"
+faiss_index_file = str(DATA_PATH) + "\\faiss_index.index"
+file_path = str(DATA_PATH) + "\\parte_205.csv"
 
 MODEL = SentenceTransformer("all-MiniLM-L6-v2")
 ZEROSHOT_CLASSIFIER_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33"
