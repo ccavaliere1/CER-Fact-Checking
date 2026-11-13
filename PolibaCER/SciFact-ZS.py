@@ -37,7 +37,7 @@ else:
 # -------------------------------------------- DATA SETUP ------------------------------------------- #
 def get_zeroshoot_claim_and_labels(data_path):
     CLAIMS_DEV_PATH = data_path / "claims_dev.jsonl"
-    # CLAIMS_DEV_PATH = data_path / "claims_train_snap.jsonl"
+    CLAIMS_DEV_PATH = data_path / "claims_train_snap.jsonl"
 
     claims = []
     labels = []
