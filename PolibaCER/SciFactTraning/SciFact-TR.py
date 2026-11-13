@@ -1,20 +1,24 @@
-﻿from pathlib import Path
+﻿import random
+from pathlib import Path
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics import classification_report
-from transformers import pipeline
 from PolibaCER.DataLoader.CorpusLoader import build_scifact_index
 from PolibaCER.FactCheck.Retriver import retrieve_scifact_top_abstracts
 from PolibaCER.FactCheck.Reasoning import reason_model_response
-from PolibaCER.FactCheck.Justifyer import parse_response, generate_justification
-from PolibaCER.FactCheck.Response import extract_label_and_score
+from PolibaCER.FactCheck.Justifyer import parse_response
 from openai import OpenAI
 import json
+from PolibaCER.SciFactTraning.traning_model import load_finetuned_model, predict
 
 
 # -------------------------------------------- GLOBAL VARIABLES ------------------------------------------- #
-DATA_PATH = Path(__file__).resolve().parent / "data" / "SciFact"
+BASE_PATH = Path(__file__).resolve().parents[1]
+DATA_PATH = BASE_PATH / "data" / "SciFact"
 MODEL = SentenceTransformer("all-MiniLM-L6-v2")
-ZEROSHOT_CLASSIFIER_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33"
+model_dir = BASE_PATH / "models" / "cer-deberta-v3-large-scifact"
+TRAINED_CLASSIFIER_MODEL, tokenizer, device = load_finetuned_model(model_dir)
+CLAIMS_NUMBER = 10
+
 LOCAL = True
 
 
@@ -35,25 +39,27 @@ else:
     )
 
 # -------------------------------------------- DATA SETUP ------------------------------------------- #
-def get_zeroshoot_claim_and_labels(data_path):
+def get_claim_and_labels(data_path, limit):
     CLAIMS_DEV_PATH = data_path / "claims_test.jsonl"
-    # CLAIMS_DEV_PATH = data_path / "claims_train_snap.jsonl"
+
+    with CLAIMS_DEV_PATH.open("r", encoding="utf-8") as file:
+        data = [json.loads(line) for line in file]
+
+    # Seleziona casualmente al massimo `limit` elementi
+    selected_data = random.sample(data, k=min(limit, len(data)))
 
     claims = []
     labels = []
 
-    with CLAIMS_DEV_PATH.open("r", encoding="utf-8") as file:
-        data = [json.loads(line) for line in file]
-        for item in data:
-            claims += [item['claim']]
+    for item in selected_data:
+        claims.append(item["claim"])
 
-            if item['evidence'] not in [None, {}]:# "evidence": {"13734012": [{"sentences": [4], "label": "CONTRADICT"}]}
-                for doc_id, evidence_list in item['evidence'].items():
-                    for evidence in evidence_list:
-                        labels += [evidence['label']]
-            else:
-                labels += ["NEI"]
-
+        if item["evidence"] not in [None, {}]:
+            for doc_id, evidence_list in item["evidence"].items():
+                for evidence in evidence_list:
+                    labels.append(evidence["label"])
+        else:
+            labels.append("NEI")
 
     return claims, labels
 
@@ -113,7 +119,7 @@ if __name__ == "__main__":
 
 
     # ------------------------------------------- CLAIM INPUT ------------------------------------------- #
-    claims, labels = get_zeroshoot_claim_and_labels(DATA_PATH)
+    claims, labels = get_claim_and_labels(DATA_PATH, CLAIMS_NUMBER)
 
     results={}
 
@@ -142,25 +148,33 @@ if __name__ == "__main__":
 
         # ------------------------------------------- JUSTIFICATION GENERATION ------------------------------------------- #
 
-
-        ######################################
-        # MODELLO TRAINATO
-        ######################################
-
-
-
-
         first_label, justification, supporting, refusing, notes = parse_response(answer)
+
+        # LA FUNZIONE PREDICT EQUIVALE ALLA "generate_justification" del ZEROSHOOT MODEL
+        # claim = claim
+        # evidence = justification
+        result = predict(
+            model=TRAINED_CLASSIFIER_MODEL,
+            tokenizer=tokenizer,
+            claim=claim,
+            evidence=justification,
+            device=device,
+        )
 
         # Generate the justification for the claim
         # in realtà classifica la giustificazione con il claim, la justification é generata dal modello di ragionamento
-        result = generate_justification(zeroshot_classifier, claim, justification)
+        # result = generate_justification(zeroshot_classifier, claim, justification)
 
         # ----------------------------------------- CREATE FINAL RESPONSE ----------------------------------------- #
-        predicted_label, score_label = extract_label_and_score(result)
+        probabilities = result["probabilities"]
 
-        # Calculate the confidence score
-        confidence = f"{score_label * 100:.2f}%"
+        predicted_label, confidence = max(
+            probabilities.items(),
+            key=lambda item: item[1],
+        )
+
+        # # Calculate the confidence score
+        # confidence = f"{score_label * 100:.2f}%"
 
         results[claim] = {
             "predicted_label": predicted_label,
@@ -168,10 +182,10 @@ if __name__ == "__main__":
             "confidence": confidence,
         }
 
-    # for claim, result in results.items():
-    #     print(f"Claim: {claim}")
-    #     print(f"Predicted Label: {predicted_label} | Confidence: {confidence} ---> Label from dataset: {labels[claims.index(claim)]}")
-    #     print("-" * 20)
+    for claim, prediction in results.items():
+        print(f"Claim: {claim}")
+        print(f"Predicted Label: {prediction['predicted_label']} Confidence: {prediction['confidence']} ---> Real Label: {prediction['true_label']}")
+        print("-" * 20)
 
 
     # ------------------------------------------- CONFUSION MATRIX ------------------------------------------- #

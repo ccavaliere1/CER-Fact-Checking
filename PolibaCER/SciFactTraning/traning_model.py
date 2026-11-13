@@ -1,14 +1,13 @@
 ﻿from __future__ import annotations
-
 import argparse
 import json
 import random
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-
 import numpy as np
 import torch
+from tqdm import tqdm
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Dataset
@@ -18,11 +17,9 @@ from transformers import (
     get_linear_schedule_with_warmup,
 )
 
-
 LABELS = ["SUPPORT", "CONTRADICT", "NEI"]
 LABEL2ID = {label: i for i, label in enumerate(LABELS)}
 ID2LABEL = {i: label for label, i in LABEL2ID.items()}
-
 
 def set_seed(seed: int) -> None:
     random.seed(seed)
@@ -226,14 +223,8 @@ def load_finetuned_model(
     return model, tokenizer, selected_device
 
 
-def predict(
-    model,
-    tokenizer,
-    claim: str,
-    evidence: str = "",
-    device: torch.device | None = None,
-    max_length: int = 512,
-) -> dict[str, Any]:
+def predict(model, tokenizer, claim: str, evidence: str = "", device: torch.device | None = None, max_length: int = 512) -> dict[str, Any]:
+
     if device is None:
         device = next(model.parameters()).device
 
@@ -336,30 +327,31 @@ def train(train_examples: list[dict[str, Any]], output_dir: Path, config: TrainC
     for epoch in range(config.epochs):
         model.train()
 
-        for batch in train_loader:
-            batch = {
-                key: value.to(device)
-                for key, value in batch.items()
-            }
+        with tqdm(train_loader, desc=f"Epoch {epoch + 1}/{config.epochs}", unit="batch", leave=False, dynamic_ncols=True) as progress:
+            for batch in progress:
+                batch = {
+                    key: value.to(device)
+                    for key, value in batch.items()
+                }
 
-            optimizer.zero_grad(set_to_none=True)
+                optimizer.zero_grad(set_to_none=True)
 
-            output = model(
-                input_ids=batch["input_ids"],
-                attention_mask=batch["attention_mask"],
-                token_type_ids=batch.get("token_type_ids"),
-            )
+                output = model(
+                    input_ids=batch["input_ids"],
+                    attention_mask=batch["attention_mask"],
+                    token_type_ids=batch.get("token_type_ids"),
+                )
 
-            loss = torch.nn.functional.cross_entropy(
-                output.logits,
-                batch["labels"],
-                weight=class_weights,
-            )
+                loss = torch.nn.functional.cross_entropy(
+                    output.logits,
+                    batch["labels"],
+                    weight=class_weights,
+                )
 
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-            optimizer.step()
-            scheduler.step()
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                optimizer.step()
+                scheduler.step()
 
         validation_loss, y_true, y_pred = evaluate(
             model,

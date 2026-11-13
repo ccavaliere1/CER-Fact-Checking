@@ -159,8 +159,8 @@ dependencies = [
     "tokenizers==0.14.1",
     "toml==0.10.2",
     "tomli==2.2.1",
-    "torch==2.5.1",
-    "torchvision==0.20.1",
+    "torch==2.5.1+cu124",
+    "torchvision==0.20.1+cu124",
     "tornado==6.4.2",
     "tqdm==4.67.1",
     "transformers==4.34.0",
@@ -182,3 +182,10 @@ dependencies = [
 
 [tool.uv.sources]
 openai-whisper = { git = "https://github.com/openai/whisper.git" }
+torch = { index = "pytorch-cu124" }
+torchvision = { index = "pytorch-cu124" }
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
