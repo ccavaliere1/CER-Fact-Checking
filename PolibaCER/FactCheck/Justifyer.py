@@ -20,7 +20,7 @@ def parse_response(response):
 
     # Regular expression patterns for extracting fields
     patterns = {
-        "first_label": r"(?:Label|Etichetta):\s*(.*?)\n",
+        "first_label": r"(?:Label|Etichetta):\s*(.{3})|(?:Label|Etichetta):\s*(.*?)\n", # OLD: (?:Label|Etichetta):\s*(.*?)\n
         "justification": r"(?:Justification|Giustificazione):\s*(.*?)(?=\n(?:Supporting sentences|Frasi di supporto|Refusing sentences|Frasi di rifiuto))",
         "supporting": r"(?:Supporting sentences from abstracts|Frasi di supporto dai documenti):\n(.*?)(?=\n(?:Refusing sentences|Frasi di rifiuto))",
         "refusing": r"(?:Refusing sentences from abstracts|Frasi di rifiuto dai documenti):\n(.*?)(?=\n(?:Note|Nota):|$)",

@@ -2,24 +2,23 @@
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics import classification_report
+from transformers import pipeline
 from PolibaCER.DataLoader.CorpusLoader import build_scifact_index
 from PolibaCER.FactCheck.Retriver import retrieve_scifact_top_abstracts
-from PolibaCER.FactCheck.Reasoning import reason_model_response
-from PolibaCER.FactCheck.Justifyer import parse_response
+from PolibaCER.FactCheck.Reasoning import reason_model_response_LOCAL, reason_model_response_GEMMA
+from PolibaCER.FactCheck.Justifyer import parse_response, generate_justification
+from PolibaCER.FactCheck.Response import extract_label_and_score, normalize_abstract_sentences
 from openai import OpenAI
 import json
-from PolibaCER.SciFactTraning.traning_model import load_finetuned_model, predict
+import os
 
 
 # -------------------------------------------- GLOBAL VARIABLES ------------------------------------------- #
-BASE_PATH = Path(__file__).resolve().parents[1]
-DATA_PATH = BASE_PATH / "data" / "SciFact"
+DATA_PATH = Path(__file__).resolve().parent / "data" / "SciFact"
 MODEL = SentenceTransformer("all-MiniLM-L6-v2")
-model_dir = BASE_PATH / "models" / "cer-deberta-v3-large-scifact"
-TRAINED_CLASSIFIER_MODEL, tokenizer, device = load_finetuned_model(model_dir)
-CLAIMS_NUMBER = 10
-
-LOCAL = True
+ZEROSHOT_CLASSIFIER_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33"
+CLAIMS_NUMBER = 3
+LOCAL = False
 
 
 # -------------------------------------------- LLM MODEL SETUP ------------------------------------------- #
@@ -31,12 +30,13 @@ if LOCAL:
         api_key="local"
     )
 else:
-    LLM_MODEL = "google/diffusiongemma-26b-a4b-it"  # funziona ma senza giustificazioni
-
-    client = OpenAI(
-        base_url="https://integrate.api.nvidia.com/v1",
-        api_key=st.secrets.nvidia.api_key
-    )
+    # LLM_MODEL = "google/diffusiongemma-26b-a4b-it"  # funziona ma senza giustificazioni
+    #
+    # client = OpenAI(
+    #     base_url="https://integrate.api.nvidia.com/v1",
+    #     api_key= os.environ.get("NVIDIA_API_KEY")
+    # )
+    print("REMOTE LLM: GOOGLE GEMINI API - GEMMA 4 26B MODEL")
 
 # -------------------------------------------- DATA SETUP ------------------------------------------- #
 def get_claim_and_labels(data_path, limit):
@@ -132,7 +132,7 @@ if __name__ == "__main__":
             index=index,
             doc_ids=doc_ids,
             documents=documents,
-            top_k=5
+            top_k=4
         )
 
         # IMPOSTAZIONE VALORI GLOBALI PER GLI ABSTRACTS
@@ -144,37 +144,31 @@ if __name__ == "__main__":
 
 
         # ------------------------------------------- PROCESSING OF THE TOP ABSTRACTS -------------------------------------------#
-        answer = reason_model_response(globals(), claim, top_abstracts, client, LLM_MODEL)
+        if LOCAL:
+            answer = reason_model_response_LOCAL(globals(), claim, top_abstracts, client, LLM_MODEL)
+        else:
+            answer = reason_model_response_GEMMA(globals(), claim, top_abstracts)
 
         # ------------------------------------------- JUSTIFICATION GENERATION ------------------------------------------- #
+        zeroshot_classifier = pipeline(
+            "zero-shot-classification", model=ZEROSHOT_CLASSIFIER_MODEL
+        )
 
         first_label, justification, supporting, refusing, notes = parse_response(answer)
 
-        # LA FUNZIONE PREDICT EQUIVALE ALLA "generate_justification" del ZEROSHOOT MODEL
-        # claim = claim
-        # evidence = justification
-        result = predict(
-            model=TRAINED_CLASSIFIER_MODEL,
-            tokenizer=tokenizer,
-            claim=claim,
-            evidence=justification,
-            device=device,
-        )
-
         # Generate the justification for the claim
         # in realtà classifica la giustificazione con il claim, la justification é generata dal modello di ragionamento
-        # result = generate_justification(zeroshot_classifier, claim, justification)
+        result = generate_justification(zeroshot_classifier, claim, justification)
 
         # ----------------------------------------- CREATE FINAL RESPONSE ----------------------------------------- #
-        probabilities = result["probabilities"]
+        predicted_label, score_label = extract_label_and_score(result)
 
-        predicted_label, confidence = max(
-            probabilities.items(),
-            key=lambda item: item[1],
-        )
+        # Calculate the confidence score
+        confidence = f"{score_label * 100:.2f}%"
 
-        # # Calculate the confidence score
-        # confidence = f"{score_label * 100:.2f}%"
+        if not LOCAL:  # BISOGNA EFFETTUARE UN ULTERIORE PULIZIA DEI SUPPORTING E REFUSING PERCHÉ IL MODELLO GEMMA NON RESTITUISCE SEMPRE LE FRASI IN MODO PULITO
+            supporting = normalize_abstract_sentences(supporting)
+            refusing = normalize_abstract_sentences(refusing)
 
         results[claim] = {
             "predicted_label": predicted_label,
@@ -186,7 +180,6 @@ if __name__ == "__main__":
         print(f"Claim: {claim}")
         print(f"Predicted Label: {prediction['predicted_label']} Confidence: {prediction['confidence']} ---> Real Label: {prediction['true_label']}")
         print("-" * 20)
-
 
     # ------------------------------------------- CONFUSION MATRIX ------------------------------------------- #
 

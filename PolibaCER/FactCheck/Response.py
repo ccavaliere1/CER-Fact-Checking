@@ -100,3 +100,32 @@ def proccess_abstracts(abstracts, supporting, refusing):
             processed_abstracts[abstract_name] = abstract_text
 
     return processed_abstracts, refusing_matches
+
+def normalize_abstract_sentences(sentences):
+    """Normalizza le frasi estratte dal modello nel formato desiderato."""
+    pattern = re.compile(
+        r"^\s*information\s+sentence\s+from\s+abstract_\d+\s*:\s*(.*?)\s*$",
+        re.IGNORECASE,
+    )
+
+    normalized = []
+
+    for item in sentences:
+        if not isinstance(item, dict) or "text" not in item:
+            normalized.append(item)
+            continue
+
+        text = item["text"].strip()
+        match = pattern.match(text)
+
+        if match:
+            text = match.group(1).strip()
+
+        text = text.replace("'", '"')
+        abstract = item.get("abstract", "")
+
+        item = item.copy()
+        item["text"] = f'- "{text}" ({abstract})'
+        normalized.append(item)
+
+    return normalized

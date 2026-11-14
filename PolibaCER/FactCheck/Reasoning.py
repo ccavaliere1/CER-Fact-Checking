@@ -1,4 +1,6 @@
-﻿def llm_reasoning_template(query):
+﻿from PolibaCER.GemmaAPI import gemma_generate
+
+def llm_reasoning_template(query):
     """
     Generate a template for the prompt used for justification generation by the LLM model.
 
@@ -59,7 +61,7 @@
     return llm_reasoning_prompt
 
 
-def reason_model_response(main_global, claim, top_abstracts, client, llm_model):
+def reason_model_response_LOCAL(main_global, claim, top_abstracts, client, llm_model):
     """
     Generate a response from the reasoning model based on the claim and abstracts.
 
@@ -92,5 +94,28 @@ def reason_model_response(main_global, claim, top_abstracts, client, llm_model):
     for chunk in completion:
         if chunk.choices[0].delta.content:
             answer += chunk.choices[0].delta.content
+
+    return answer
+
+def reason_model_response_GEMMA(main_global, claim, top_abstracts):
+    """
+    Generate a response from the reasoning model based on the claim and abstracts.
+
+    Args:
+        main_global: globals() dictionary containing global variables.
+        claim (str): Claim to fact-check.
+        top_abstracts (list): List of top abstracts.
+        client (OpenAI): OpenAI client.
+        llm_model (str): Name of the LLM model.
+    """
+
+    prompt_template = llm_reasoning_template(claim)
+
+    # Add the abstracts to the prompt
+    for i in range(1, len(top_abstracts)):
+        prompt_template += f"{main_global[f'abstract_{i}']} ; "
+        prompt_template += f"{main_global[f'abstract_{len(top_abstracts)}']} [/INST]"
+
+    answer = gemma_generate(prompt_template)
 
     return answer

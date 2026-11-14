@@ -1,15 +1,16 @@
 ﻿from pathlib import Path
-
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 from transformers import pipeline
 from PolibaCER.DataLoader.CorpusLoader import load_pubmed_embeddings
 from PolibaCER.FactCheck.Retriver import retrieve_pubmed_top_abstracts
-from PolibaCER.FactCheck.Reasoning import reason_model_response
+from PolibaCER.FactCheck.Reasoning import reason_model_response_LOCAL, reason_model_response_GEMMA
 from PolibaCER.FactCheck.Justifyer import parse_response, generate_justification
-from PolibaCER.FactCheck.Response import extract_label_and_score, extract_supporting_and_refusing_sentences, proccess_abstracts
+from PolibaCER.FactCheck.Response import extract_label_and_score, extract_supporting_and_refusing_sentences, \
+    proccess_abstracts, normalize_abstract_sentences
 from PolibaCER.FactCheck.ClaimDetection import input_claim_text
 from openai import OpenAI
+import os
 
 
 # -------------------------------------------- GLOBAL VARIABLES ------------------------------------------- #
@@ -23,7 +24,7 @@ file_path = str(DATA_PATH) + "\\parte_205.csv"
 
 MODEL = SentenceTransformer("all-MiniLM-L6-v2")
 ZEROSHOT_CLASSIFIER_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33"
-LOCAL = True
+LOCAL = False
 
 
 # -------------------------------------------- LLM MODEL SETUP ------------------------------------------- #
@@ -35,12 +36,13 @@ if LOCAL:
         api_key="local"
     )
 else:
-    LLM_MODEL = "google/diffusiongemma-26b-a4b-it"  # funziona ma senza giustificazioni
-
-    client = OpenAI(
-        base_url="https://integrate.api.nvidia.com/v1",
-        api_key=st.secrets.nvidia.api_key
-    )
+    # LLM_MODEL = "google/diffusiongemma-26b-a4b-it"  # funziona ma senza giustificazioni
+    #
+    # client = OpenAI(
+    #     base_url="https://integrate.api.nvidia.com/v1",
+    #     api_key= os.environ.get("NVIDIA_API_KEY")
+    # )
+    print("REMOTE LLM: GOOGLE GEMINI API - GEMMA 4 26B MODEL")
 
 
 # -------------------------------------------- MAIN FUNCTION ------------------------------------------- #
@@ -57,7 +59,7 @@ if __name__ == "__main__":
 
 
     # ------------------------------------------- RETRIEVE TOP ABSTRACTS ------------------------------------------- #
-    top_abstracts = retrieve_pubmed_top_abstracts(claim=claim, model=MODEL, index=index, pmids=pmids, data=data, top_k=5)
+    top_abstracts = retrieve_pubmed_top_abstracts(claim=claim, model=MODEL, index=index, pmids=pmids, data=data, top_k=4)
 
     # IMPOSTAZIONE VALORI GLOBALI PER GLI ABSTRACTS
     print("\n------------------------------------------- TOP ABSTRACTS -------------------------------------------")
@@ -76,7 +78,10 @@ if __name__ == "__main__":
 
 
     # ------------------------------------------- PROCESSING OF THE TOP ABSTRACTS -------------------------------------------#
-    answer = reason_model_response(globals(), claim, top_abstracts, client, LLM_MODEL)
+    if LOCAL:
+        answer = reason_model_response_LOCAL(globals(), claim, top_abstracts, client, LLM_MODEL)
+    else:
+        answer = reason_model_response_GEMMA(globals(), claim, top_abstracts)
 
 
     # ------------------------------------------- JUSTIFICATION GENERATION ------------------------------------------- #
@@ -104,6 +109,10 @@ if __name__ == "__main__":
 
     # Calculate the confidence score
     confidence = f"{score_label * 100:.2f}%"
+
+    if not LOCAL: # BISOGNA EFFETTUARE UN ULTERIORE PULIZIA DEI SUPPORTING E REFUSING PERCHÉ IL MODELLO GEMMA NON RESTITUISCE SEMPRE LE FRASI IN MODO PULITO
+        supporting = normalize_abstract_sentences(supporting)
+        refusing = normalize_abstract_sentences(refusing)
 
     abstracts, supporting, refusing = extract_supporting_and_refusing_sentences(globals(), top_abstracts, supporting, refusing)
 
