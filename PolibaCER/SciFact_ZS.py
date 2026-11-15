@@ -3,7 +3,7 @@ from pathlib import Path
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics import classification_report
 from transformers import pipeline
-from PolibaCER.DataLoader.CorpusLoader import build_scifact_index
+from PolibaCER.DataLoader.DataLoader import build_scifact_index, save_prediction_to_json
 from PolibaCER.FactCheck.Retriver import retrieve_scifact_top_abstracts
 from PolibaCER.FactCheck.Reasoning import reason_model_response_LOCAL, reason_model_response_GEMMA
 from PolibaCER.FactCheck.Justifyer import parse_response, generate_justification
@@ -15,13 +15,15 @@ import os
 
 # -------------------------------------------- GLOBAL VARIABLES ------------------------------------------- #
 DATA_PATH = Path(__file__).resolve().parent / "data" / "SciFact"
-MODEL = SentenceTransformer("all-MiniLM-L6-v2")
+RETRIVER_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
 ZEROSHOT_CLASSIFIER_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33"
+result_path = Path(__file__).resolve().parent / "DataLoader" / "ZS_results.json"
 CLAIMS_NUMBER = 3
 LOCAL = False
+NVIDIA = False
 
 
-# -------------------------------------------- LLM MODEL SETUP ------------------------------------------- #
+# -------------------------------------------- LLM RETRIVER_MODEL SETUP ------------------------------------------- #
 if LOCAL:
     LLM_MODEL = "bartowski/Qwen2.5-7B-Instruct-GGUF:Q6_K"
 
@@ -30,13 +32,15 @@ if LOCAL:
         api_key="local"
     )
 else:
-    # LLM_MODEL = "google/diffusiongemma-26b-a4b-it"  # funziona ma senza giustificazioni
-    #
-    # client = OpenAI(
-    #     base_url="https://integrate.api.nvidia.com/v1",
-    #     api_key= os.environ.get("NVIDIA_API_KEY")
-    # )
-    print("REMOTE LLM: GOOGLE GEMINI API - GEMMA 4 26B MODEL")
+    if NVIDIA:
+        LLM_MODEL = "google/diffusiongemma-26b-a4b-it"  # funziona ma senza giustificazioni
+
+        client = OpenAI(
+            base_url="https://integrate.api.nvidia.com/v1",
+            api_key= os.environ.get("NVIDIA_API_KEY")
+        )
+    else:
+        print("REMOTE LLM: GOOGLE GEMINI API - GEMMA 4 26B MODEL")
 
 # -------------------------------------------- DATA SETUP ------------------------------------------- #
 def get_claim_and_labels(data_path, limit):
@@ -111,7 +115,7 @@ if __name__ == "__main__":
 
     # ------------------------------------------- BUILD SCI-FACT INDEX ------------------------------------------- #
     documents, doc_ids, index = build_scifact_index(
-        model=MODEL,
+        model=RETRIVER_MODEL,
         data_path=DATA_PATH,
         NEW_INDEX=False,
     )
@@ -128,7 +132,7 @@ if __name__ == "__main__":
         # ------------------------------------------- RETRIEVE TOP ABSTRACTS ------------------------------------------- #
         top_abstracts = retrieve_scifact_top_abstracts(
             claim=claim,
-            model=MODEL,
+            model=RETRIVER_MODEL,
             index=index,
             doc_ids=doc_ids,
             documents=documents,
@@ -144,7 +148,7 @@ if __name__ == "__main__":
 
 
         # ------------------------------------------- PROCESSING OF THE TOP ABSTRACTS -------------------------------------------#
-        if LOCAL:
+        if NVIDIA or LOCAL:
             answer = reason_model_response_LOCAL(globals(), claim, top_abstracts, client, LLM_MODEL)
         else:
             answer = reason_model_response_GEMMA(globals(), claim, top_abstracts)
@@ -175,6 +179,15 @@ if __name__ == "__main__":
             "true_label": labels[claims.index(claim)],
             "confidence": confidence,
         }
+
+        # ----------------------------------------- SAVE PREDICTION TO JSON ----------------------------------------- #
+        save_prediction_to_json(
+            id=claims.index(claim),
+            predicted_label=predicted_label,
+            true_label=labels[claims.index(claim)],
+            output_file=result_path
+        )
+
 
     for claim, prediction in results.items():
         print(f"Claim: {claim}")

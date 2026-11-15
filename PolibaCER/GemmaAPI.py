@@ -26,8 +26,20 @@ def gemma_generate(input_text):
         )
     )
 
+    def standard_response():
+        return (
+            "Label: NEI\n"
+            "Justification: Impossibile ottenere una risposta dal modello.\n"
+            "Supporting sentences from abstracts:\n"
+            "Refusing sentences from abstracts:\n"
+            "Note: Google AI non disponibile."
+        )
+
+
     answer = ""
-    max_attempts = 3
+    max_attempts = 10
+    base_backoff = 2
+    max_backoff = 30
     start_time = time.perf_counter()
     for attempt in range(max_attempts):
         try:
@@ -45,17 +57,14 @@ def gemma_generate(input_text):
         except errors.ServerError as error:
 
             if error.code != 500:
-                raise
+                warnings.warn(
+                    f"Errore Google non recuperabile: {error}",
+                    RuntimeWarning,
+                )
+                return standard_response()
 
             if attempt == max_attempts - 1:
-                answer = (
-                    "Label: NEI\n"
-                    "Justification: Impossibile ottenere una risposta dal modello "
-                    "dopo i tentativi disponibili.\n"
-                    "Supporting sentences from abstracts:\n"
-                    "Refusing sentences from abstracts:\n"
-                    "Note: Google AI non disponibile."
-                )
+                answer = standard_response()
 
                 warnings.warn(
                     "Tentativi esauriti. Restituita una risposta predefinita.",
@@ -63,13 +72,24 @@ def gemma_generate(input_text):
                 )
                 break
 
+            backoff_time = min(base_backoff * (2 ** attempt), max_backoff)
+
             warnings.warn(
                 f"Errore Google 500. Nuovo tentativo "
                 f"({attempt + 2}/{max_attempts})...",
                 RuntimeWarning,
             )
-            time.sleep(2)
+            time.sleep(backoff_time)
+
+        except Exception as error:
+            warnings.warn(
+                f"Errore durante la richiesta a Google: {error}. "
+                "Restituita una risposta standard.",
+                RuntimeWarning,
+            )
+            return standard_response()
 
     time.perf_counter()
     # print(answer)
     return answer
+

@@ -2,7 +2,7 @@
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 from transformers import pipeline
-from PolibaCER.DataLoader.CorpusLoader import load_pubmed_embeddings
+from PolibaCER.DataLoader.DataLoader import load_pubmed_embeddings
 from PolibaCER.FactCheck.Retriver import retrieve_pubmed_top_abstracts
 from PolibaCER.FactCheck.Reasoning import reason_model_response_LOCAL, reason_model_response_GEMMA
 from PolibaCER.FactCheck.Justifyer import parse_response, generate_justification
@@ -22,12 +22,13 @@ pmid_file = str(DATA_PATH) + "\\pmids.npy"
 faiss_index_file = str(DATA_PATH) + "\\faiss_index.index"
 file_path = str(DATA_PATH) + "\\parte_205.csv"
 
-MODEL = SentenceTransformer("all-MiniLM-L6-v2")
+RETRIVER_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
 ZEROSHOT_CLASSIFIER_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33"
+NVIDIA = False
 LOCAL = False
 
 
-# -------------------------------------------- LLM MODEL SETUP ------------------------------------------- #
+# -------------------------------------------- LLM RETRIVER_MODEL SETUP ------------------------------------------- #
 if LOCAL:
     LLM_MODEL = "bartowski/Qwen2.5-7B-Instruct-GGUF:Q6_K"
 
@@ -36,13 +37,15 @@ if LOCAL:
         api_key="local"
     )
 else:
-    # LLM_MODEL = "google/diffusiongemma-26b-a4b-it"  # funziona ma senza giustificazioni
-    #
-    # client = OpenAI(
-    #     base_url="https://integrate.api.nvidia.com/v1",
-    #     api_key= os.environ.get("NVIDIA_API_KEY")
-    # )
-    print("REMOTE LLM: GOOGLE GEMINI API - GEMMA 4 26B MODEL")
+    if NVIDIA:
+        LLM_MODEL = "google/diffusiongemma-26b-a4b-it"  # funziona ma senza giustificazioni
+
+        client = OpenAI(
+            base_url="https://integrate.api.nvidia.com/v1",
+            api_key= os.environ.get("NVIDIA_API_KEY")
+        )
+    else:
+        print("REMOTE LLM: GOOGLE GEMINI API - GEMMA 4 26B RETRIVER_MODEL")
 
 
 # -------------------------------------------- MAIN FUNCTION ------------------------------------------- #
@@ -59,7 +62,7 @@ if __name__ == "__main__":
 
 
     # ------------------------------------------- RETRIEVE TOP ABSTRACTS ------------------------------------------- #
-    top_abstracts = retrieve_pubmed_top_abstracts(claim=claim, model=MODEL, index=index, pmids=pmids, data=data, top_k=4)
+    top_abstracts = retrieve_pubmed_top_abstracts(claim=claim, model=RETRIVER_MODEL, index=index, pmids=pmids, data=data, top_k=4)
 
     # IMPOSTAZIONE VALORI GLOBALI PER GLI ABSTRACTS
     print("\n------------------------------------------- TOP ABSTRACTS -------------------------------------------")
@@ -78,7 +81,7 @@ if __name__ == "__main__":
 
 
     # ------------------------------------------- PROCESSING OF THE TOP ABSTRACTS -------------------------------------------#
-    if LOCAL:
+    if NVIDIA or LOCAL:
         answer = reason_model_response_LOCAL(globals(), claim, top_abstracts, client, LLM_MODEL)
     else:
         answer = reason_model_response_GEMMA(globals(), claim, top_abstracts)

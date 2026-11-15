@@ -117,3 +117,62 @@ def load_index(data_path):
 
     index = faiss.read_index(str(faiss_index_file))
     return index
+
+# ----------------------------------------------- END SCIFACT INDEX UTILS ------------------------------------------------ #
+
+# ----------------------------------------------- SAVE AND LOAD JSON UTILS ------------------------------------------------ #
+def save_prediction_to_json(id, predicted_label, true_label, output_file):
+    """
+    Salva una predizione nel formato:
+    {
+        "1": ["predicted label", "true label"]
+    }
+    """
+    output_path = Path(output_file)
+
+    if output_path.exists():
+        with output_path.open("r", encoding="utf-8") as file:
+            results = json.load(file)
+    else:
+        results = {}
+
+    results[str(id)] = [predicted_label, true_label]
+
+    with output_path.open("w", encoding="utf-8") as file:
+        json.dump(results, file, indent=4, ensure_ascii=False)
+
+
+def load_predictions_from_json(input_file):
+    """
+    Carica le predizioni e restituisce:
+    {
+        "1": {
+            "predicted_label": "...",
+            "true_label": "..."
+        }
+    }
+    """
+    input_path = Path(input_file)
+
+    if not input_path.exists():
+        raise FileNotFoundError(f"File di predizioni non trovato: {input_path}")
+
+    with input_path.open("r", encoding="utf-8") as file:
+        raw_results = json.load(file)
+
+    results = {}
+
+    for prediction_id, labels in raw_results.items():
+        if not isinstance(labels, list) or len(labels) != 2:
+            raise ValueError(
+                f"Formato non valido per l'ID {prediction_id}: "
+                "atteso [predicted_label, true_label]"
+            )
+
+        results[prediction_id] = {
+            "predicted_label": labels[0],
+            "true_label": labels[1],
+        }
+
+    return results
+# ----------------------------------------------- END SAVE AND LOAD JSON UTILS ------------------------------------------------ #
