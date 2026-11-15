@@ -43,14 +43,16 @@ else:
         print("REMOTE LLM: GOOGLE GEMINI API - GEMMA 4 26B MODEL")
 
 # -------------------------------------------- DATA SETUP ------------------------------------------- #
-def get_claim_and_labels(data_path, limit):
-    CLAIMS_DEV_PATH = data_path / "claims_test.jsonl"
+def get_claim_and_labels(data_path, limit, random_selection=False):
+    CLAIMS_DEV_PATH = data_path / "claims_train_snap.jsonl"
 
     with CLAIMS_DEV_PATH.open("r", encoding="utf-8") as file:
         data = [json.loads(line) for line in file]
 
-    # Seleziona casualmente al massimo `limit` elementi
-    selected_data = random.sample(data, k=min(limit, len(data)))
+    if random_selection:
+        selected_data = random.sample(data, k=min(limit, len(data)))
+    else:
+        selected_data = data[:limit]
 
     claims = []
     labels = []
