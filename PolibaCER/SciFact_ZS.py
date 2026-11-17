@@ -17,6 +17,7 @@ import os
 DATA_PATH = Path(__file__).resolve().parent / "data" / "SciFact"
 RETRIVER_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
 ZEROSHOT_CLASSIFIER_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33"
+result_path = Path(__file__).resolve().parent / "DataLoader" / f"ZS_QWEN2-5_7B.json"
 CLAIMS_NUMBER = 300
 LOCAL = True
 NVIDIA = False
@@ -44,8 +45,6 @@ else:
         LLM_MODEL = "gemini-3.5-flash-lite"
         #LLM_MODEL = "gemini-4-hydrogen"
         print("REMOTE LLM: GOOGLE GEMINI API - {} model".format(LLM_MODEL))
-
-result_path = Path(__file__).resolve().parent / "DataLoader" / f"ZS_{LLM_MODEL}.json"
 
 # -------------------------------------------- DATA SETUP ------------------------------------------- #
 def get_claim_records(data_path, limit, random_selection=False):
