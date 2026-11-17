@@ -4,7 +4,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics import classification_report
 from PolibaCER.DataLoader.DataLoader import build_scifact_index
 from PolibaCER.FactCheck.Retriver import retrieve_scifact_top_abstracts
-from PolibaCER.FactCheck.Reasoning import reason_model_response_LOCAL, reason_model_response_GEMMA
+from PolibaCER.FactCheck.Reasoning import reason_model_response_LOCAL, reason_model_response_GEMINI
 from PolibaCER.FactCheck.Justifyer import parse_response
 from PolibaCER.FactCheck.Response import normalize_abstract_sentences
 from openai import OpenAI
@@ -152,7 +152,7 @@ if __name__ == "__main__":
         if NVIDIA or LOCAL:
             answer = reason_model_response_LOCAL(globals(), claim, top_abstracts, client, LLM_MODEL)
         else:
-            answer = reason_model_response_GEMMA(globals(), claim, top_abstracts)
+            answer = reason_model_response_GEMINI(globals(), claim, top_abstracts)
 
         # ------------------------------------------- JUSTIFICATION GENERATION ------------------------------------------- #
 
