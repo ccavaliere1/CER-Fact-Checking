@@ -1,0 +1,911 @@
+﻿Claim: 0-dimensional biomaterials show inductive properties.
+Predicted Label: NEI Confidence: 54.30% ---> Real Label: NEI
+--------------------
+Claim: 1,000 genomes project enables mapping of genetic sequence variation consisting of rare variants with larger penetrance effects than common variants.
+Predicted Label: NEI Confidence: 52.46% ---> Real Label: SUPPORT
+--------------------
+Claim: 1/2000 in UK have abnormal PrP positivity.
+Predicted Label: True Confidence: 65.12% ---> Real Label: SUPPORT
+--------------------
+Claim: 5% of perinatal mortality is due to low birth weight.
+Predicted Label: NEI Confidence: 51.80% ---> Real Label: SUPPORT
+--------------------
+Claim: A deficiency of vitamin B12 increases blood levels of homocysteine.
+Predicted Label: True Confidence: 43.05% ---> Real Label: NEI
+--------------------
+Claim: A high microerythrocyte count raises vulnerability to severe anemia in homozygous alpha (+)- thalassemia trait subjects.
+Predicted Label: False Confidence: 40.09% ---> Real Label: NEI
+--------------------
+Claim: A total of 1,000 people in the UK are asymptomatic carriers of vCJD infection.
+Predicted Label: NEI Confidence: 38.23% ---> Real Label: CONTRADICT
+--------------------
+Claim: ADAR1 binds to Dicer to cleave pre-miRNA.
+Predicted Label: True Confidence: 82.77% ---> Real Label: CONTRADICT
+--------------------
+Claim: AIRE is expressed in some skin tumors.
+Predicted Label: True Confidence: 94.98% ---> Real Label: CONTRADICT
+--------------------
+Claim: ALDH1 expression is associated with better breast cancer outcomes.
+Predicted Label: False Confidence: 44.04% ---> Real Label: SUPPORT
+--------------------
+Claim: ALDH1 expression is associated with poorer prognosis in breast cancer.
+Predicted Label: True Confidence: 90.14% ---> Real Label: SUPPORT
+--------------------
+Claim: AMP-activated protein kinase (AMPK) activation increases inflammation-related fibrosis in the lungs.
+Predicted Label: False Confidence: 78.27% ---> Real Label: SUPPORT
+--------------------
+Claim: APOE4 expression in iPSC-derived neurons increases AlphaBeta production and tau phosphorylation causing GABA neuron degeneration.
+Predicted Label: True Confidence: 87.40% ---> Real Label: CONTRADICT
+--------------------
+Claim: APOE4 expression in iPSC-derived neurons increases AlphaBeta production and tau phosphorylation, delaying GABA neuron degeneration.
+Predicted Label: False Confidence: 68.98% ---> Real Label: SUPPORT
+--------------------
+Claim: Activation of PPM1D suppresses p53 function.
+Predicted Label: False Confidence: 48.82% ---> Real Label: CONTRADICT
+--------------------
+Claim: Activator-inhibitor pairs are provided dorsally by Admpchordin.
+Predicted Label: False Confidence: 47.38% ---> Real Label: CONTRADICT
+--------------------
+Claim: Active H. pylori urease has a polymeric structure that compromises two subunits, UreA and UreB.
+Predicted Label: False Confidence: 44.96% ---> Real Label: CONTRADICT
+--------------------
+Claim: Albendazole is used to treat lymphatic filariasis.
+Predicted Label: NEI Confidence: 59.11% ---> Real Label: SUPPORT
+--------------------
+Claim: Alizarin forms hydrogen bonds with residues involved in PGAM1 substrate binding.
+Predicted Label: NEI Confidence: 50.61% ---> Real Label: CONTRADICT
+--------------------
+Claim: All hematopoietic stem cells segregate their chromosomes randomly.
+Predicted Label: True Confidence: 96.76% ---> Real Label: SUPPORT
+--------------------
+Claim: Angiotensin converting enzyme inhibitors are associated with increased risk for functional renal insufficiency.
+Predicted Label: True Confidence: 62.05% ---> Real Label: SUPPORT
+--------------------
+Claim: Anthrax spores can be disposed of easily after they are dispersed.
+Predicted Label: NEI Confidence: 34.47% ---> Real Label: NEI
+--------------------
+Claim: Antibiotic induced alterations in the gut microbiome reduce resistance against Clostridium difficile
+Predicted Label: True Confidence: 94.90% ---> Real Label: NEI
+--------------------
+Claim: Antiretroviral therapy reduces rates of tuberculosis across a broad range of CD4 strata.
+Predicted Label: True Confidence: 96.50% ---> Real Label: NEI
+--------------------
+Claim: Arginine 90 in p150n is important for interaction with EB1.
+Predicted Label: True Confidence: 38.06% ---> Real Label: NEI
+--------------------
+Claim: Arterioles have a larger lumen diameter than venules.
+Predicted Label: NEI Confidence: 59.48% ---> Real Label: SUPPORT
+--------------------
+Claim: Articles published in open access format are less likely to be cited than traditional journals.
+Predicted Label: False Confidence: 82.35% ---> Real Label: SUPPORT
+--------------------
+Claim: Articles published in open access format are more likely to be cited than traditional journals.
+Predicted Label: True Confidence: 96.98% ---> Real Label: SUPPORT
+--------------------
+Claim: Aspirin inhibits the production of PGE2.
+Predicted Label: NEI Confidence: 55.60% ---> Real Label: CONTRADICT
+--------------------
+Claim: Assembly of invadopodia is triggered by focal generation of phosphatidylinositol-3,4-biphosphate and the activation of the nonreceptor tyrosine kinase Src.
+Predicted Label: NEI Confidence: 58.69% ---> Real Label: SUPPORT
+--------------------
+Claim: Asymptomatic visual impairment screening in elderly populations does not lead to improved vision.
+Predicted Label: True Confidence: 92.50% ---> Real Label: SUPPORT
+--------------------
+Claim: Auditory entrainment is strengthened when people see congruent visual and auditory information.
+Predicted Label: True Confidence: 70.30% ---> Real Label: SUPPORT
+--------------------
+Claim: Autologous transplantation of mesenchymal stem cells causes a higher rate of opportunistic infections than induction therapy with anti-interleukin-2 receptor antibodies.
+Predicted Label: True Confidence: 36.54% ---> Real Label: SUPPORT
+--------------------
+Claim: Autologous transplantation of mesenchymal stem cells causes fewer opportunistic infections than induction therapy with anti-interleukin-2 receptor antibodies.
+Predicted Label: True Confidence: 63.79% ---> Real Label: NEI
+--------------------
+Claim: Autologous transplantation of mesenchymal stem cells has lower rates of rejection than induction therapy with anti-interleukin-2 receptor antibodies.
+Predicted Label: True Confidence: 55.84% ---> Real Label: NEI
+--------------------
+Claim: Autophagy declines in aged organisms.
+Predicted Label: True Confidence: 88.30% ---> Real Label: CONTRADICT
+--------------------
+Claim: Bariatric surgery has a positive impact on mental health.
+Predicted Label: True Confidence: 94.49% ---> Real Label: CONTRADICT
+--------------------
+Claim: Basophils counteract disease development in patients with systemic lupus erythematosus (SLE).
+Predicted Label: False Confidence: 54.64% ---> Real Label: CONTRADICT
+--------------------
+Claim: Birth-weight is positively associated with breast cancer.
+Predicted Label: True Confidence: 89.81% ---> Real Label: CONTRADICT
+--------------------
+Claim: Blocking the interaction between TDP-43 and respiratory complex I proteins ND3 and ND6 leads to increased TDP-43-induced neuronal loss.
+Predicted Label: True Confidence: 38.28% ---> Real Label: SUPPORT
+--------------------
+Claim: Bone marrow cells contribute to adult macrophage compartments.
+Predicted Label: False Confidence: 77.47% ---> Real Label: SUPPORT
+--------------------
+Claim: Breast cancer development is determined exclusively by genetic factors.
+Predicted Label: False Confidence: 62.92% ---> Real Label: SUPPORT
+--------------------
+Claim: CCL19 is absent within dLNs.
+Predicted Label: NEI Confidence: 43.28% ---> Real Label: SUPPORT
+--------------------
+Claim: CHEK2 is not associated with breast cancer.
+Predicted Label: False Confidence: 82.36% ---> Real Label: NEI
+--------------------
+Claim: CR is associated with higher methylation age.
+Predicted Label: False Confidence: 46.38% ---> Real Label: SUPPORT
+--------------------
+Claim: CRP is not predictive of postoperative mortality following Coronary Artery Bypass Graft (CABG) surgery.
+Predicted Label: False Confidence: 74.41% ---> Real Label: SUPPORT
+--------------------
+Claim: CX3CR1 on the Th2 cells impairs T cell survival
+Predicted Label: False Confidence: 64.45% ---> Real Label: SUPPORT
+--------------------
+Claim: CX3CR1 on the Th2 cells promotes T cell survival
+Predicted Label: True Confidence: 91.44% ---> Real Label: SUPPORT
+--------------------
+Claim: CX3CR1 on the Th2 cells promotes airway inflammation.
+Predicted Label: True Confidence: 54.01% ---> Real Label: SUPPORT
+--------------------
+Claim: CX3CR1 on the Th2 cells suppresses airway inflammation.
+Predicted Label: False Confidence: 46.34% ---> Real Label: SUPPORT
+--------------------
+Claim: Carriers of the alcohol aldehyde dehydrogenase deficiency mutation drink less that non-carries.
+Predicted Label: NEI Confidence: 40.63% ---> Real Label: SUPPORT
+--------------------
+Claim: Cataract and trachoma are the primary cause of blindness in Southern Sudan.
+Predicted Label: NEI Confidence: 43.04% ---> Real Label: SUPPORT
+--------------------
+Claim: Cell autonomous sex determination in somatic cells does not occur in Galliformes.
+Predicted Label: False Confidence: 84.08% ---> Real Label: CONTRADICT
+--------------------
+Claim: Cell autonomous sex determination in somatic cells occurs in Passeriformes.
+Predicted Label: NEI Confidence: 72.95% ---> Real Label: SUPPORT
+--------------------
+Claim: Cells lacking clpC have a defect in sporulation efficiency in Bacillus subtilis.
+Predicted Label: NEI Confidence: 57.68% ---> Real Label: SUPPORT
+--------------------
+Claim: Cells undergoing methionine restriction may activate miRNAs.
+Predicted Label: NEI Confidence: 42.75% ---> Real Label: SUPPORT
+--------------------
+Claim: Cellular aging closely links to an older appearance.
+Predicted Label: False Confidence: 38.08% ---> Real Label: SUPPORT
+--------------------
+Claim: Chenodeosycholic acid treatment increases whole-body energy expenditure.
+Predicted Label: True Confidence: 75.84% ---> Real Label: SUPPORT
+--------------------
+Claim: Chenodeosycholic acid treatment reduces whole-body energy expenditure.
+Predicted Label: True Confidence: 49.67% ---> Real Label: SUPPORT
+--------------------
+Claim: Chronic aerobic exercise alters endothelial function, improving vasodilating mechanisms mediated by NO.
+Predicted Label: True Confidence: 63.85% ---> Real Label: CONTRADICT
+--------------------
+Claim: Cold exposure increases BAT recruitment.
+Predicted Label: NEI Confidence: 49.09% ---> Real Label: CONTRADICT
+--------------------
+Claim: Cold exposure reduces BAT recruitment.
+Predicted Label: NEI Confidence: 43.82% ---> Real Label: CONTRADICT
+--------------------
+Claim: Combination nicotine replacement therapies with varenicline or bupropion lead to significantly higher long-term abstinence rates at 52 weeks than varenicline monotherapy.
+Predicted Label: False Confidence: 74.81% ---> Real Label: SUPPORT
+--------------------
+Claim: Combining phosphatidylinositide 3-kinase and MEK 1/2 inhibitors is effective at treating KRAS mutant tumors.
+Predicted Label: True Confidence: 93.09% ---> Real Label: SUPPORT
+--------------------
+Claim: Commelina yellow mottle virus' (ComYMV) genome consists of 7489 baise pairs.
+Predicted Label: True Confidence: 94.66% ---> Real Label: SUPPORT
+--------------------
+Claim: Crossover hot spots are not found within gene promoters in Saccharomyces cerevisiae.
+Predicted Label: NEI Confidence: 37.31% ---> Real Label: SUPPORT
+--------------------
+Claim: Crosstalk between dendritic cells (DCs) and innate lymphoid cells (ILCs) is important in the regulation of intestinal homeostasis.
+Predicted Label: True Confidence: 56.20% ---> Real Label: SUPPORT
+--------------------
+Claim: Cytochrome c is released from the mitochondrial intermembrane space to cytosol during apoptosis.
+Predicted Label: True Confidence: 60.19% ---> Real Label: SUPPORT
+--------------------
+Claim: Cytosolic proteins bind to iron-responsive elements on mRNAs coding for DMT1. Cytosolic proteins bind to iron-responsive elements on mRNAs coding for proteins involved in iron uptake.
+Predicted Label: NEI Confidence: 70.93% ---> Real Label: SUPPORT
+--------------------
+Claim: DMRT1 is a sex-determining gene that is epigenetically regulated by the MHM region.
+Predicted Label: NEI Confidence: 40.37% ---> Real Label: SUPPORT
+--------------------
+Claim: De novo assembly of sequence data has more specific contigs than unassembled sequence data.
+Predicted Label: False Confidence: 44.10% ---> Real Label: CONTRADICT
+--------------------
+Claim: Deamination of cytidine to uridine on the minus strand of viral DNA results in catastrophic G-to-A mutations in the viral genome.
+Predicted Label: True Confidence: 65.70% ---> Real Label: CONTRADICT
+--------------------
+Claim: Deleting Raptor reduces G-CSF levels.
+Predicted Label: NEI Confidence: 40.59% ---> Real Label: CONTRADICT
+--------------------
+Claim: Deletion of αvβ8 does not result in a spontaneous inflammatory phenotype.
+Predicted Label: True Confidence: 77.68% ---> Real Label: CONTRADICT
+--------------------
+Claim: Dexamethasone decreases risk of postoperative bleeding.
+Predicted Label: False Confidence: 63.16% ---> Real Label: NEI
+--------------------
+Claim: Diabetic patients with acute coronary syndrome experience increased short-term and long-term risk for bleeding events.
+Predicted Label: True Confidence: 89.10% ---> Real Label: SUPPORT
+--------------------
+Claim: Discrimination between the initiator and elongation tRNAs depends on the translation initiation factor IF3.
+Predicted Label: NEI Confidence: 65.26% ---> Real Label: CONTRADICT
+--------------------
+Claim: Downregulation and mislocalization of Scribble prevents cell transformation and mammary tumorigenesis.
+Predicted Label: False Confidence: 57.26% ---> Real Label: CONTRADICT
+--------------------
+Claim: During the primary early antibody response activated B cells migrate toward the inner-and outer paracortical areas where oxysterol accumulation is generated by stromal cells.
+Predicted Label: NEI Confidence: 59.55% ---> Real Label: CONTRADICT
+--------------------
+Claim: Enhanced early production of inflammatory chemokines improves viral control in the lung.
+Predicted Label: True Confidence: 96.03% ---> Real Label: CONTRADICT
+--------------------
+Claim: Epidemiological disease burden from noncommunicable diseases is more prevalent in low economic settings.
+Predicted Label: NEI Confidence: 38.55% ---> Real Label: CONTRADICT
+--------------------
+Claim: Epigenetic modulating agents (EMAs) modulate antitumor immune response in a cancer model system.
+Predicted Label: True Confidence: 91.50% ---> Real Label: NEI
+--------------------
+Claim: Errors in peripheral IV drug administration are most common during bolus administration and multiple-step medicine preparations.
+Predicted Label: True Confidence: 94.26% ---> Real Label: CONTRADICT
+--------------------
+Claim: Ethanol stress decreases the expression of IBP in bacteria.
+Predicted Label: False Confidence: 38.22% ---> Real Label: SUPPORT
+--------------------
+Claim: Exposure to fine particulate air pollution is relate to anxiety prevalence.
+Predicted Label: True Confidence: 75.90% ---> Real Label: SUPPORT
+--------------------
+Claim: Febrile seizures increase the threshold for development of epilepsy.
+Predicted Label: NEI Confidence: 44.94% ---> Real Label: SUPPORT
+--------------------
+Claim: Febrile seizures reduce the threshold for development of epilepsy.
+Predicted Label: NEI Confidence: 46.71% ---> Real Label: SUPPORT
+--------------------
+Claim: Female carriers of the Apolipoprotein E4 (APOE4) allele have increased risk for dementia.
+Predicted Label: NEI Confidence: 52.32% ---> Real Label: CONTRADICT
+--------------------
+Claim: Flexible molecules experience greater steric hindrance in the tumor microenviroment than rigid molecules.
+Predicted Label: False Confidence: 47.96% ---> Real Label: CONTRADICT
+--------------------
+Claim: FoxO3a activation in neuronal death is mediated by reactive oxygen species (ROS).
+Predicted Label: False Confidence: 37.74% ---> Real Label: SUPPORT
+--------------------
+Claim: Free histones are degraded by a Rad53-dependent mechanism once DNA has been replicated.
+Predicted Label: NEI Confidence: 84.91% ---> Real Label: NEI
+--------------------
+Claim: Functional consequences of genomic alterations due to Myelodysplastic syndrome (MDS) are poorly understood due to the lack of an animal model.
+Predicted Label: False Confidence: 64.41% ---> Real Label: CONTRADICT
+--------------------
+Claim: Fz/PCP-dependent Pk localizes to the anterior membrane of neuroectoderm cells during zebrafish neuralation
+Predicted Label: NEI Confidence: 42.48% ---> Real Label: CONTRADICT
+--------------------
+Claim: Fz/PCP-dependent Pk localizes to the anterior membrane of notochord cells during zebrafish neuralation.
+Predicted Label: NEI Confidence: 44.89% ---> Real Label: CONTRADICT
+--------------------
+Claim: GATA-3 is important for hematopoietic stem cell (HSC) function.
+Predicted Label: True Confidence: 57.32% ---> Real Label: SUPPORT
+--------------------
+Claim: Gene expression does not vary appreciably across genetically identical cells.
+Predicted Label: False Confidence: 96.79% ---> Real Label: SUPPORT
+--------------------
+Claim: Glycolysis is one of the primary glycometabolic pathways in cells.
+Predicted Label: True Confidence: 88.10% ---> Real Label: SUPPORT
+--------------------
+Claim: Golli-deficient T-cells prefer to differentiate into an anergic phenotype in the adaptive immune response when there are increased levels of Ca2+ in the cytosol.
+Predicted Label: NEI Confidence: 41.89% ---> Real Label: NEI
+--------------------
+Claim: HNF4A mutations can cause diabetes in mutant carriers by the age of 14 years
+Predicted Label: NEI Confidence: 39.84% ---> Real Label: NEI
+--------------------
+Claim: Headaches are not correlated with cognitive impairment.
+Predicted Label: True Confidence: 95.50% ---> Real Label: SUPPORT
+--------------------
+Claim: Healthcare delivery efficiency in crowded delivery centers is impaired by improving structural, logistical, and interpersonal elements.
+Predicted Label: False Confidence: 41.75% ---> Real Label: SUPPORT
+--------------------
+Claim: Helminths interfere with immune system control of macrophages activated by IL-4 favor Mycobacterium tuberculosis replication.
+Predicted Label: True Confidence: 93.57% ---> Real Label: SUPPORT
+--------------------
+Claim: Hematopoietic Stem Cell purification reaches purity rate of up to 50%.
+Predicted Label: NEI Confidence: 80.01% ---> Real Label: SUPPORT
+--------------------
+Claim: High cardiopulmonary fitness causes increased mortality rate.
+Predicted Label: False Confidence: 59.58% ---> Real Label: CONTRADICT
+--------------------
+Claim: High dietary calcium intakes are unnecessary for prevention of secondary hyperparathyroidism in subjects with 25(OH)D levels above 75 nmol/liter.
+Predicted Label: NEI Confidence: 70.59% ---> Real Label: CONTRADICT
+--------------------
+Claim: High levels of CRP reduces the risk of exacerbations in chronic obstructive pulmonary disease (COPD).
+Predicted Label: NEI Confidence: 37.44% ---> Real Label: SUPPORT
+--------------------
+Claim: High levels of copeptin decrease risk of diabetes.
+Predicted Label: NEI Confidence: 42.03% ---> Real Label: SUPPORT
+--------------------
+Claim: High-sensitivity cardiac troponin T (HSCT-T) dosage may not be diagnostic if the onset of symptoms occurs less than 3 hours before acute myocardial injury (AMI).
+Predicted Label: True Confidence: 85.87% ---> Real Label: NEI
+--------------------
+Claim: Histone demethylase recruitment and a transient decrease in histone methylation is necessary for ligand-dependent induction of transcription by nuclear receptors.
+Predicted Label: True Confidence: 84.64% ---> Real Label: NEI
+--------------------
+Claim: Homozygous deletion of murine Sbds gene from osterix-expressing mesenchymal stem and progenitor cells (MPCs) prevents oxidative stress.
+Predicted Label: NEI Confidence: 41.99% ---> Real Label: CONTRADICT
+--------------------
+Claim: Human T-lymphotropic virus type-I-associated myelopathy / tropical spastic paraparesis (HAM/TSP) patients produce Immunoglobulin G (IgG) antibodies which cross-react with an immunodominant epitope in Tax.
+Predicted Label: True Confidence: 90.99% ---> Real Label: CONTRADICT
+--------------------
+Claim: Hyperfibrinogenemia decreases rates of femoropopliteal bypass thrombosis.
+Predicted Label: False Confidence: 50.45% ---> Real Label: SUPPORT
+--------------------
+Claim: Hyperfibrinogenemia increases rates of femoropopliteal bypass thrombosis.
+Predicted Label: True Confidence: 94.91% ---> Real Label: SUPPORT
+--------------------
+Claim: Hypertension is frequently observed in type 1 diabetes patients.
+Predicted Label: False Confidence: 40.77% ---> Real Label: SUPPORT
+--------------------
+Claim: Hypocretin neurones induce panicprone state in rats.
+Predicted Label: True Confidence: 78.16% ---> Real Label: SUPPORT
+--------------------
+Claim: Hypoglycemia increases the risk of dementia.
+Predicted Label: True Confidence: 97.68% ---> Real Label: NEI
+--------------------
+Claim: Hypothalamic glutamate neurotransmission is crucial to energy balance.
+Predicted Label: True Confidence: 54.47% ---> Real Label: SUPPORT
+--------------------
+Claim: IFIT1 restricts viral replication by sequestrating mis-capped viral RNAs.
+Predicted Label: NEI Confidence: 69.95% ---> Real Label: SUPPORT
+--------------------
+Claim: IRG1 has antiviral effects against neurotropic viruses.
+Predicted Label: True Confidence: 67.05% ---> Real Label: SUPPORT
+--------------------
+Claim: ITAM phosphorylation prevents the transfer of the T cell receptor (TCR) signal from the echo-domain to the cytoplasmic tail of the T cell receptor (TCR).
+Predicted Label: False Confidence: 60.19% ---> Real Label: NEI
+--------------------
+Claim: IgA plasma cells that are specific for transglutaminase 2 accumulate in the duodenal mucosa on commencement of a gluten-free diet.
+Predicted Label: False Confidence: 38.55% ---> Real Label: NEI
+--------------------
+Claim: Immune complex triggered cell death leads to extracellular release of neutrophil protein HMGB1.
+Predicted Label: NEI Confidence: 75.48% ---> Real Label: NEI
+--------------------
+Claim: Immune responses result in the development of inflammatory Th17 cells and anti-inflammatory iTregs.
+Predicted Label: True Confidence: 79.12% ---> Real Label: SUPPORT
+--------------------
+Claim: In adult tissue, most T cells are memory T cells.
+Predicted Label: True Confidence: 69.82% ---> Real Label: NEI
+--------------------
+Claim: In domesticated populations of Saccharomyces cerevisiae, whole chromosome aneuploidy is very uncommon.
+Predicted Label: NEI Confidence: 63.08% ---> Real Label: SUPPORT
+--------------------
+Claim: In mice, P. chabaudi parasites are able to proliferate faster early in infection when inoculated at lower numbers than when inoculated at high numbers.
+Predicted Label: NEI Confidence: 56.55% ---> Real Label: CONTRADICT
+--------------------
+Claim: In mouse models, the loss of CSF1R facilitates MOZ-TIF2-induced leuekmogenesis.
+Predicted Label: True Confidence: 35.18% ---> Real Label: CONTRADICT
+--------------------
+Claim: In transgenic mice harboring green florescent protein under the control of the Sox2 promoter, less than ten percent of the cells with green florescent colocalize with cell proliferation markers.
+Predicted Label: False Confidence: 43.83% ---> Real Label: CONTRADICT
+--------------------
+Claim: In young and middle-aged adults, current or remote uses of ADHD medications do not increase the risk of serious cardiovascular events.
+Predicted Label: True Confidence: 96.85% ---> Real Label: SUPPORT
+--------------------
+Claim: Incidence of heart failure decreased by 10% in women since 1979.
+Predicted Label: False Confidence: 63.80% ---> Real Label: NEI
+--------------------
+Claim: Incidence rates of cervical cancer have decreased.
+Predicted Label: True Confidence: 96.60% ---> Real Label: NEI
+--------------------
+Claim: Incidence rates of cervical cancer have increased due to nationwide screening programs based primarily on cytology to detect uterine cervical cancer.
+Predicted Label: False Confidence: 53.26% ---> Real Label: NEI
+--------------------
+Claim: Increased microtubule acetylation repairs LRRK2 Roc-COR domain mutation induced locomotor deficits.
+Predicted Label: True Confidence: 73.35% ---> Real Label: SUPPORT
+--------------------
+Claim: Increased vessel density along with a reduction in fibrosis decreases the efficacy of chemotherapy treatments.
+Predicted Label: NEI Confidence: 52.16% ---> Real Label: NEI
+--------------------
+Claim: Individuals with low serum vitamin D concentrations have increased risk of multiple sclerosis.
+Predicted Label: NEI Confidence: 41.45% ---> Real Label: SUPPORT
+--------------------
+Claim: Infection of human T-cell lymphotropic virus type 1 is most frequent in individuals of African origin.
+Predicted Label: NEI Confidence: 42.85% ---> Real Label: SUPPORT
+--------------------
+Claim: Inositol lipid 3-phosphatase PTEN converts Ptdlns(3,4)P 2 into phosphatidylinositol 4-phosphate.
+Predicted Label: True Confidence: 90.16% ---> Real Label: SUPPORT
+--------------------
+Claim: Input from  mental and physical health care professionals is effective at decreasing homelessness.
+Predicted Label: False Confidence: 39.50% ---> Real Label: NEI
+--------------------
+Claim: Insomnia can be effectively treated with cognitive behavioral therapy.
+Predicted Label: True Confidence: 87.11% ---> Real Label: SUPPORT
+--------------------
+Claim: Insulin increases risk of severe kidney failure.
+Predicted Label: False Confidence: 44.07% ---> Real Label: SUPPORT
+--------------------
+Claim: Integrating classroom-based collaborative learning with Web-based collaborative learning leads to subpar class performance
+Predicted Label: False Confidence: 42.65% ---> Real Label: NEI
+--------------------
+Claim: Ivermectin is used to treat lymphatic filariasis.
+Predicted Label: True Confidence: 67.66% ---> Real Label: NEI
+--------------------
+Claim: Ivermectin is used to treat onchocerciasis.
+Predicted Label: NEI Confidence: 64.62% ---> Real Label: SUPPORT
+--------------------
+Claim: LDL cholesterol has no involvement in the development of cardiovascular disease.
+Predicted Label: False Confidence: 96.42% ---> Real Label: NEI
+--------------------
+Claim: Lack of clpC does not affect sporulation efficiency in Bacillus subtilis cells.
+Predicted Label: True Confidence: 47.14% ---> Real Label: SUPPORT
+--------------------
+Claim: Less than 10% of the gabonese children with Schimmelpenning-Feuerstein-Mims syndrome (SFM) had a plasma lactate of more than 5mmol/L.
+Predicted Label: False Confidence: 42.67% ---> Real Label: SUPPORT
+--------------------
+Claim: Leukemia associated Rho guanine nucleotide-exchange factor represses RhoA in response to SRC activation.
+Predicted Label: False Confidence: 46.98% ---> Real Label: SUPPORT
+--------------------
+Claim: Leuko-increased blood increases infectious complications in red blood cell transfusion.
+Predicted Label: False Confidence: 73.16% ---> Real Label: NEI
+--------------------
+Claim: Leuko-reduced blood reduces infectious complications in red blood cell transfusion.
+Predicted Label: False Confidence: 57.67% ---> Real Label: NEI
+--------------------
+Claim: Localization of PIN1 in the Arabidopsis embryo does not require VPS9a
+Predicted Label: False Confidence: 40.74% ---> Real Label: NEI
+--------------------
+Claim: Localization of PIN1 in the roots of Arabidopsis does not require VPS9a
+Predicted Label: NEI Confidence: 48.04% ---> Real Label: SUPPORT
+--------------------
+Claim: Low expression of miR7a does represses target genes and exerts a biological function in ovaries.
+Predicted Label: NEI Confidence: 36.53% ---> Real Label: CONTRADICT
+--------------------
+Claim: Low expression of miR7a exerts a biological function in testis.
+Predicted Label: False Confidence: 45.54% ---> Real Label: CONTRADICT
+--------------------
+Claim: Low nucleosome occupancy correlates with low methylation levels across species.
+Predicted Label: False Confidence: 51.49% ---> Real Label: SUPPORT
+--------------------
+Claim: Lupus-prone mice infected with curliproducing bacteria have higher autoantibody titers compared to controls.
+Predicted Label: True Confidence: 96.77% ---> Real Label: NEI
+--------------------
+Claim: Ly49Q directs the organization of neutrophil migration to inflammation sites by regulating membrane raft functions.
+Predicted Label: True Confidence: 54.90% ---> Real Label: NEI
+--------------------
+Claim: Ly6C hi monocytes have a lower inflammatory capacity compared to their Ly6C lo counterparts.
+Predicted Label: NEI Confidence: 39.06% ---> Real Label: SUPPORT
+--------------------
+Claim: Ly6C hi monocytes have a lower inflammatory capacity than Ly6C lo monocytes.
+Predicted Label: False Confidence: 49.16% ---> Real Label: NEI
+--------------------
+Claim: Lymphadenopathy is observed in knockin mouse lacking the SHP-2 MAPK pathway.
+Predicted Label: True Confidence: 64.63% ---> Real Label: NEI
+--------------------
+Claim: Macrolides have no protective effect against myocardial infarction.
+Predicted Label: False Confidence: 37.08% ---> Real Label: NEI
+--------------------
+Claim: Macrolides protect against myocardial infarction.
+Predicted Label: NEI Confidence: 71.22% ---> Real Label: CONTRADICT
+--------------------
+Claim: Macropinocytosis contributes to a cell's supply of amino acids via the intracellular uptake of protein.
+Predicted Label: True Confidence: 94.30% ---> Real Label: NEI
+--------------------
+Claim: Many proteins in human cells can be post-translationally modified at lysine residues via acetylation.
+Predicted Label: True Confidence: 91.31% ---> Real Label: CONTRADICT
+--------------------
+Claim: Mathematical models predict that using Artemisinin-based combination therapy over nongametocytocidal drugs have a dramatic impact in reducing malaria transmission.
+Predicted Label: False Confidence: 41.12% ---> Real Label: CONTRADICT
+--------------------
+Claim: Mercaptopurine is anabolized into the inactive methylmercaptopurine by thiopurine methyltrasnferase (TPMT).
+Predicted Label: NEI Confidence: 45.60% ---> Real Label: NEI
+--------------------
+Claim: Metastatic colorectal cancer treated with a single agent fluoropyrimidines resulted in reduced efficacy and lower quality of life when compared with oxaliplatin-based chemotherapy in elderly patients.
+Predicted Label: False Confidence: 52.28% ---> Real Label: SUPPORT
+--------------------
+Claim: Mice defective for deoxyribonucleic acid (DNA) polymerase I (polI) reveal increased sensitivity to ionizing radiation (IR).
+Predicted Label: False Confidence: 53.53% ---> Real Label: SUPPORT
+--------------------
+Claim: Mice that lack Interferon-γ or its receptor exhibit high resistance to experimental autoimmune myocarditis.
+Predicted Label: False Confidence: 41.81% ---> Real Label: NEI
+--------------------
+Claim: Mice without IFN-γ or its receptor are resistant to EAM induced with α-MyHC/CFA.
+Predicted Label: False Confidence: 53.14% ---> Real Label: SUPPORT
+--------------------
+Claim: MicroRNA is involved in the regulation of Neural Stem Cell (NSC) differentiation and proliferation dynamic homeostasis
+Predicted Label: True Confidence: 93.04% ---> Real Label: CONTRADICT
+--------------------
+Claim: Microarray results from culture-amplified mixtures of serotypes correlate poorly with microarray results from uncultured mixtures.
+Predicted Label: NEI Confidence: 40.80% ---> Real Label: CONTRADICT
+--------------------
+Claim: Mitochondria are uninvolved in apoptosis.
+Predicted Label: False Confidence: 51.09% ---> Real Label: CONTRADICT
+--------------------
+Claim: Modifying the epigenome in the brain affects the normal human aging process by affecting certain genes related to neurogenesis.
+Predicted Label: NEI Confidence: 63.96% ---> Real Label: CONTRADICT
+--------------------
+Claim: Monoclonal antibody targeting of N-cadherin inhibits metastasis.
+Predicted Label: True Confidence: 36.77% ---> Real Label: SUPPORT
+--------------------
+Claim: Most termination events in Okazaki fragments are sequence specific.
+Predicted Label: False Confidence: 42.57% ---> Real Label: SUPPORT
+--------------------
+Claim: Mutant mice lacking SVCT2 have greatly increased ascorbic acid levels in both brain and adrenals.
+Predicted Label: False Confidence: 77.84% ---> Real Label: SUPPORT
+--------------------
+Claim: Mutations in G-Beta protein GNB2 are present in many cancers, resulting in loss of interaction with G-alpha subunits and concomitant activation of AKT pathway.
+Predicted Label: True Confidence: 49.23% ---> Real Label: SUPPORT
+--------------------
+Claim: N-terminal cleavage increases success identifying transcription start sites.
+Predicted Label: True Confidence: 40.55% ---> Real Label: NEI
+--------------------
+Claim: N-terminal cleavage reduces success identifying transcription start sites.
+Predicted Label: False Confidence: 45.62% ---> Real Label: SUPPORT
+--------------------
+Claim: N348I mutations cause resistance to zidovudine (AZT).
+Predicted Label: True Confidence: 85.79% ---> Real Label: SUPPORT
+--------------------
+Claim: NF2 (Merlin) causes phosphorylation and subsequent cytoplasmic sequestration of YAP in Drosophila by activating LATS1/2 kinases.
+Predicted Label: NEI Confidence: 84.21% ---> Real Label: SUPPORT
+--------------------
+Claim: NF2 (Merlin) prevents phosphorylation and subsequent cytoplasmic sequestration of YAP in Drosophila.
+Predicted Label: NEI Confidence: 92.12% ---> Real Label: SUPPORT
+--------------------
+Claim: NFAT4 activation requires IP3R-mediated Ca2+ mobilization.
+Predicted Label: True Confidence: 54.83% ---> Real Label: NEI
+--------------------
+Claim: NOX2-independent pathways can generate peroxynitrite by reacting with nitrogen intermediates.
+Predicted Label: False Confidence: 48.84% ---> Real Label: SUPPORT
+--------------------
+Claim: NR5A2 is important in development of endometrial tissues.
+Predicted Label: True Confidence: 54.12% ---> Real Label: NEI
+--------------------
+Claim: Nanoparticles can be targeted against specific cell types by incorporating aptamers into lipid nanoparticles.
+Predicted Label: True Confidence: 75.34% ---> Real Label: NEI
+--------------------
+Claim: Neutrophil extracellular traps (NETs) are released by ANCA-stimulated neutrophils.
+Predicted Label: True Confidence: 72.59% ---> Real Label: NEI
+--------------------
+Claim: New drugs for tuberculosis often do not penetrate the necrotic portion of a tuberculosis lesion in high concentrations.
+Predicted Label: NEI Confidence: 85.03% ---> Real Label: NEI
+--------------------
+Claim: Non-invasive ventilation use should be decreased if there is inadequate response to conventional treatment.
+Predicted Label: NEI Confidence: 55.99% ---> Real Label: SUPPORT
+--------------------
+Claim: Normal expression of RUNX1 has tumor-promoting effects.
+Predicted Label: False Confidence: 35.96% ---> Real Label: NEI
+--------------------
+Claim: Obesity decreases life quality.
+Predicted Label: True Confidence: 82.41% ---> Real Label: NEI
+--------------------
+Claim: Obesity is determined solely by environmental factors.
+Predicted Label: False Confidence: 79.56% ---> Real Label: CONTRADICT
+--------------------
+Claim: Occupancy of ribosomes by IncRNAs do not make functional peptides.
+Predicted Label: True Confidence: 58.71% ---> Real Label: CONTRADICT
+--------------------
+Claim: Occupancy of ribosomes by IncRNAs mirror 5 0-UTRs
+Predicted Label: True Confidence: 89.93% ---> Real Label: CONTRADICT
+--------------------
+Claim: Omnivores produce less trimethylamine N-oxide from dietary I-carnitine than vegetarians.
+Predicted Label: False Confidence: 35.86% ---> Real Label: NEI
+--------------------
+Claim: Only a minority of cells survive development after differentiation into stress-resistant spores.
+Predicted Label: False Confidence: 52.23% ---> Real Label: SUPPORT
+--------------------
+Claim: PD-1 triggering on monocytes reduces IL-10 production by monocytes.
+Predicted Label: False Confidence: 40.95% ---> Real Label: SUPPORT
+--------------------
+Claim: PDPN promotes efficient motility along stromal surfaces by activating the C-type lectin receptor to rearrange the actin cytoskeleton in dendritic cells.
+Predicted Label: True Confidence: 97.84% ---> Real Label: SUPPORT
+--------------------
+Claim: PGE 2 promotes intestinal tumor growth by altering the expression of tumor suppressing and DNA repair genes.
+Predicted Label: True Confidence: 97.54% ---> Real Label: SUPPORT
+--------------------
+Claim: PKG-la plays an essential role in expression of pain hypersensitivity in PGK-la knockout mice.
+Predicted Label: True Confidence: 86.47% ---> Real Label: SUPPORT
+--------------------
+Claim: PPAR-RXRs are inhibited by PPAR ligands.
+Predicted Label: False Confidence: 35.09% ---> Real Label: SUPPORT
+--------------------
+Claim: PPAR-RXRs can be activated by PPAR ligands.
+Predicted Label: True Confidence: 42.96% ---> Real Label: CONTRADICT
+--------------------
+Claim: Participating in six months of physical activity improves cognitive functioning.
+Predicted Label: True Confidence: 93.35% ---> Real Label: CONTRADICT
+--------------------
+Claim: Patients in stable partnerships have a faster progression from HIV to AIDS.
+Predicted Label: True Confidence: 35.33% ---> Real Label: SUPPORT
+--------------------
+Claim: Peroxynitrite is required for nitration of TCR/CD8.
+Predicted Label: True Confidence: 70.80% ---> Real Label: CONTRADICT
+--------------------
+Claim: Pleiotropic coupling of GLP-1R to intracellular effectors promotes distinct profiles of cellular signaling.
+Predicted Label: True Confidence: 92.72% ---> Real Label: NEI
+--------------------
+Claim: Podocytes are motile and migrate in the presence of injury.
+Predicted Label: False Confidence: 39.28% ---> Real Label: NEI
+--------------------
+Claim: Polymeal nutrition reduces cardiovascular mortality.
+Predicted Label: True Confidence: 50.38% ---> Real Label: SUPPORT
+--------------------
+Claim: Pretreatment with the Arp2/3 inhibitor CK-666 affects lamelliopodia formation.
+Predicted Label: False Confidence: 39.72% ---> Real Label: NEI
+--------------------
+Claim: Primary cervical cancer screening with HPV detection has higher longitudinal sensitivity than conventional cytology to detect cervical intraepithelial neoplasia grade 2.
+Predicted Label: True Confidence: 41.01% ---> Real Label: SUPPORT
+--------------------
+Claim: Primary pro-inflammatory cytokines induce secondary pro- and anti-inflammatory mediators.
+Predicted Label: NEI Confidence: 39.99% ---> Real Label: SUPPORT
+--------------------
+Claim: Proteins synthesized at the growth cone are ubiquitinated at a higher rate than proteins from the cell body.
+Predicted Label: True Confidence: 37.98% ---> Real Label: SUPPORT
+--------------------
+Claim: Pseudogene PTENP1 regulates the expression of PTEN by functioning as an miRNA decoy.
+Predicted Label: False Confidence: 44.99% ---> Real Label: SUPPORT
+--------------------
+Claim: Pyridostatin destabilizes the G - quadruplex in the telomeric region.
+Predicted Label: NEI Confidence: 36.48% ---> Real Label: NEI
+--------------------
+Claim: Radioiodine treatment of non-toxic multinodular goitre reduces thyroid volume.
+Predicted Label: True Confidence: 37.44% ---> Real Label: NEI
+--------------------
+Claim: Rapamycin decreases the concentration of triacylglycerols in fruit flies.
+Predicted Label: NEI Confidence: 58.73% ---> Real Label: NEI
+--------------------
+Claim: Rapid phosphotransfer rates govern fidelity in two component systems
+Predicted Label: False Confidence: 56.42% ---> Real Label: NEI
+--------------------
+Claim: Rapid up-regulation and higher basal expression of interferon-induced genes increase survival of granule cell neurons that are infected by West Nile virus.
+Predicted Label: True Confidence: 36.65% ---> Real Label: CONTRADICT
+--------------------
+Claim: Rapid up-regulation and higher basal expression of interferon-induced genes reduce survival of granule cell neurons that are infected by West Nile virus.
+Predicted Label: False Confidence: 43.32% ---> Real Label: NEI
+--------------------
+Claim: Recurrent mutations occur frequently within CTCF anchor sites adjacent to oncogenes.
+Predicted Label: NEI Confidence: 42.48% ---> Real Label: NEI
+--------------------
+Claim: Reduced responsiveness to interleukin-2 in regulatory T cells is associated with greater resistance to autoimmune diseases such as Type 1 Diabetes.
+Predicted Label: True Confidence: 39.10% ---> Real Label: NEI
+--------------------
+Claim: Replacement of histone H2A with H2A.Z slows gene activation in yeasts by stabilizing +1 nucleosomes.
+Predicted Label: False Confidence: 56.14% ---> Real Label: CONTRADICT
+--------------------
+Claim: Ribosomopathies have a low degree of cell and tissue specific pathology.
+Predicted Label: False Confidence: 76.09% ---> Real Label: CONTRADICT
+--------------------
+Claim: S-nitrosylated GAPDH physiologically transnitrosylates histone deacetylases.
+Predicted Label: True Confidence: 65.02% ---> Real Label: CONTRADICT
+--------------------
+Claim: Sildenafil improves erectile function in men who experience sexual dysfunction as a result of the use of SSRI antidepressants.
+Predicted Label: True Confidence: 46.14% ---> Real Label: SUPPORT
+--------------------
+Claim: Silencing of Bcl2 is important for the maintenance and progression of tumors.
+Predicted Label: True Confidence: 47.05% ---> Real Label: SUPPORT
+--------------------
+Claim: Smc5/6 engagment drives the activation of SUMO E3 ligase Mms21 by ATP-dependent remolding.
+Predicted Label: False Confidence: 50.92% ---> Real Label: SUPPORT
+--------------------
+Claim: Statins decrease blood cholesterol.
+Predicted Label: NEI Confidence: 45.17% ---> Real Label: NEI
+--------------------
+Claim: Statins increase blood cholesterol.
+Predicted Label: NEI Confidence: 42.13% ---> Real Label: NEI
+--------------------
+Claim: Stroke patients with prior use of direct oral anticoagulants have a lower risk of in-hospital mortality than stroke patients with prior use of warfarin.
+Predicted Label: True Confidence: 66.06% ---> Real Label: NEI
+--------------------
+Claim: Subcutaneous fat depots undergo extensive browning processes after cold exposure.
+Predicted Label: True Confidence: 78.12% ---> Real Label: NEI
+--------------------
+Claim: Suboptimal nutrition is not predictive of chronic disease
+Predicted Label: False Confidence: 43.17% ---> Real Label: CONTRADICT
+--------------------
+Claim: Synaptic activity enhances local release of brain derived neurotrophic factor from postsynaptic dendrites.
+Predicted Label: False Confidence: 34.45% ---> Real Label: SUPPORT
+--------------------
+Claim: T regulatory cells (tTregs) lacking αvβ8 are more adept at suppressing pathogenic T-cell responses during active inflammation.
+Predicted Label: True Confidence: 40.57% ---> Real Label: SUPPORT
+--------------------
+Claim: TCR/CD3 microdomains are a required to induce the immunologic synapse to activate T cells.
+Predicted Label: False Confidence: 48.47% ---> Real Label: SUPPORT
+--------------------
+Claim: TNFAIP3 is a tumor suppressor in glioblastoma.
+Predicted Label: False Confidence: 61.70% ---> Real Label: NEI
+--------------------
+Claim: Taking 400mg of α-tocopheryl acetate helps to prevent prostate cancer.
+Predicted Label: True Confidence: 51.00% ---> Real Label: CONTRADICT
+--------------------
+Claim: Taxation of sugar-sweetened beverages had no effect on the incidence rate of type II diabetes in India.
+Predicted Label: False Confidence: 80.00% ---> Real Label: CONTRADICT
+--------------------
+Claim: Teaching hospitals do not provide better care than non-teaching hospitals.
+Predicted Label: True Confidence: 88.87% ---> Real Label: SUPPORT
+--------------------
+Claim: Tetraspanin-3 is a causative factor in the development of acute myelogenous leukemia
+Predicted Label: True Confidence: 91.21% ---> Real Label: SUPPORT
+--------------------
+Claim: The DdrB protein from Deinococcus radiodurans is an alternative SSB.
+Predicted Label: True Confidence: 52.80% ---> Real Label: CONTRADICT
+--------------------
+Claim: The PPR MDA5 has two N-terminal CARD domains.
+Predicted Label: NEI Confidence: 52.53% ---> Real Label: SUPPORT
+--------------------
+Claim: The PRR MDA5 has a central DExD/H RNA helices domain.
+Predicted Label: NEI Confidence: 55.64% ---> Real Label: SUPPORT
+--------------------
+Claim: The PRR MDA5 is a sensor of RNA virus infection.
+Predicted Label: False Confidence: 47.44% ---> Real Label: CONTRADICT
+--------------------
+Claim: The US health care system can save up to $750 million if 7% of patients waiting for kidney transplants participate in the optimized national kidney paired donation program.
+Predicted Label: True Confidence: 92.23% ---> Real Label: NEI
+--------------------
+Claim: The YAP1 and TEAD complex tanslocates into the nucleus where it interacts with transcription factors and DNA-binding proteins that modulate target gene transcription.
+Predicted Label: False Confidence: 55.81% ---> Real Label: SUPPORT
+--------------------
+Claim: The amount of publicly available DNA data doubles every 10 years.
+Predicted Label: False Confidence: 44.43% ---> Real Label: NEI
+--------------------
+Claim: The arm density of TatAd complexes is due to structural rearrangements within Class1 TatAd complexes such as the 'charge zipper mechanism'.
+Predicted Label: False Confidence: 36.32% ---> Real Label: CONTRADICT
+--------------------
+Claim: The availability of safe places to study is effective at decreasing homelessness.
+Predicted Label: NEI Confidence: 48.40% ---> Real Label: CONTRADICT
+--------------------
+Claim: The availability of safe places to study is not effective at decreasing homelessness.
+Predicted Label: False Confidence: 90.56% ---> Real Label: CONTRADICT
+--------------------
+Claim: The benefits of colchicine were achieved with effective widespread use of secondary prevention strategies such as high-dose statins.
+Predicted Label: True Confidence: 37.87% ---> Real Label: NEI
+--------------------
+Claim: The binding orientation of the ML-SA1 activator at hTRPML2 is different from the binding orientation of the ML-SA1 activator at hTRPML1.
+Predicted Label: False Confidence: 44.26% ---> Real Label: SUPPORT
+--------------------
+Claim: The center of the granuloma in an immune cell induces a pro-inflammatory immune response.
+Predicted Label: False Confidence: 47.27% ---> Real Label: NEI
+--------------------
+Claim: The combination of H3K4me3 and H3K79me2 is found in quiescent hair follicle stem cells.
+Predicted Label: NEI Confidence: 46.58% ---> Real Label: CONTRADICT
+--------------------
+Claim: The composition of myosin-II isoform switches from the polarizable B isoform to the more homogenous A isoform during hematopoietic differentiation.
+Predicted Label: False Confidence: 49.21% ---> Real Label: NEI
+--------------------
+Claim: The deregulated and prolonged activation of monocytes has deleterious effects in inflammatory diseases.
+Predicted Label: NEI Confidence: 51.17% ---> Real Label: SUPPORT
+--------------------
+Claim: The extracellular domain of TMEM27 is cleaved in human beta cells.
+Predicted Label: False Confidence: 37.88% ---> Real Label: SUPPORT
+--------------------
+Claim: The genomic aberrations found in matasteses are very similar to those found in the primary tumor.
+Predicted Label: NEI Confidence: 37.59% ---> Real Label: SUPPORT
+--------------------
+Claim: The locus rs647161 is associated with colorectal carcinoma.
+Predicted Label: True Confidence: 58.65% ---> Real Label: CONTRADICT
+--------------------
+Claim: The loss of the TET protein functions may have dire biological consequences, such as myeloid cancers.
+Predicted Label: True Confidence: 51.18% ---> Real Label: CONTRADICT
+--------------------
+Claim: The minor G allele of FOXO3 is related to more severe symptoms of Crohn's Disease.
+Predicted Label: False Confidence: 49.36% ---> Real Label: NEI
+--------------------
+Claim: The myocardial lineage develops from cardiac progenitors of mesodermal origin.
+Predicted Label: True Confidence: 73.65% ---> Real Label: NEI
+--------------------
+Claim: The one-child policy has been successful in lowering population growth.
+Predicted Label: False Confidence: 52.43% ---> Real Label: NEI
+--------------------
+Claim: The relationship between a breast cancer patient's capacity to metabolize tamoxifen and treatment outcome is dependent on the patient's genetic make-up.
+Predicted Label: True Confidence: 94.68% ---> Real Label: SUPPORT
+--------------------
+Claim: The repair of Cas9-induced double strand breaks in human DNA is error-prone.
+Predicted Label: True Confidence: 88.95% ---> Real Label: NEI
+--------------------
+Claim: The risk of breast cancer among parous women increases with placental weight of pregnancies, and this association is strongest for premenopausal breast cancer.
+Predicted Label: False Confidence: 48.26% ---> Real Label: NEI
+--------------------
+Claim: The risk of male prisoners harming themselves is ten times that of female prisoners.
+Predicted Label: False Confidence: 44.27% ---> Real Label: SUPPORT
+--------------------
+Claim: The severity of cardiac involvement in amyloidosis can be described by the degree of transmurality of late gadolinium enhancement in MRI.
+Predicted Label: True Confidence: 90.12% ---> Real Label: SUPPORT
+--------------------
+Claim: The single flash-evoked ERG b-wave is generated by activity of ON-bipolar cells.
+Predicted Label: NEI Confidence: 44.28% ---> Real Label: SUPPORT
+--------------------
+Claim: The sliding activity of kinesin-8 protein Kip3 promotes bipolar spindle assembly.
+Predicted Label: True Confidence: 94.20% ---> Real Label: NEI
+--------------------
+Claim: The tip of the inner tube of the toxic type VI secretion system (T6SS) antibacterial effector in Escherichia coli (E. coli) carries toxic effector proteins.
+Predicted Label: False Confidence: 47.49% ---> Real Label: SUPPORT
+--------------------
+Claim: The treatment of cancer patients with co-IR blockade does not cause any adverse autoimmune events.
+Predicted Label: False Confidence: 53.55% ---> Real Label: SUPPORT
+--------------------
+Claim: The treatment of cancer patients with co-IR blockade precipitates adverse autoimmune events.
+Predicted Label: NEI Confidence: 45.73% ---> Real Label: SUPPORT
+--------------------
+Claim: The ureABIEFGH gene cluster encodes urease maturation proteins : UreD/UreH, UreE, UreF, and UreG.
+Predicted Label: NEI Confidence: 52.97% ---> Real Label: SUPPORT
+--------------------
+Claim: The ureABIEFGH gene cluster is induced by nickel (II) ion.
+Predicted Label: NEI Confidence: 43.19% ---> Real Label: SUPPORT
+--------------------
+Claim: Therapeutic use of the drug Dapsone to treat pyoderma gangrenous is based on anecdotal evidence.
+Predicted Label: False Confidence: 56.79% ---> Real Label: CONTRADICT
+--------------------
+Claim: There is an inverse relationship between hip fractures and statin use.
+Predicted Label: True Confidence: 68.96% ---> Real Label: CONTRADICT
+--------------------
+Claim: There is no association between HNF4A mutations and diabetes risks.
+Predicted Label: False Confidence: 42.76% ---> Real Label: CONTRADICT
+--------------------
+Claim: Thigh-length graduated compression stockings (GCS) did not reduce deep vein thrombosis in patients admitted to hospital who are immobile because of acute stroke.
+Predicted Label: True Confidence: 48.54% ---> Real Label: CONTRADICT
+--------------------
+Claim: Tirasemtiv has no effect on fast-twitch muscle.
+Predicted Label: False Confidence: 45.80% ---> Real Label: NEI
+--------------------
+Claim: Transferred UCB T cells acquire a memory-like phenotype in recipients.
+Predicted Label: NEI Confidence: 53.87% ---> Real Label: CONTRADICT
+--------------------
+Claim: Transplanted human glial cells can differentiate within the host animal.
+Predicted Label: True Confidence: 76.67% ---> Real Label: CONTRADICT
+--------------------
+Claim: Transplanted human glial progenitor cells are incapable of forming a neural network with host animals' neurons.
+Predicted Label: True Confidence: 51.11% ---> Real Label: CONTRADICT
+--------------------
+Claim: Tumor necrosis factor alpha (TNF-α) and interleukin-1 (IL-1) are pro-inflammatory cytokines that inhibit IL-6 and IL-10.
+Predicted Label: NEI Confidence: 73.12% ---> Real Label: CONTRADICT
+--------------------
+Claim: UCB T cells maintain high TCR diversity after transplantation.
+Predicted Label: True Confidence: 83.45% ---> Real Label: CONTRADICT
+--------------------
+Claim: UCB T cells reduce TCR diversity after transplantation.
+Predicted Label: False Confidence: 48.04% ---> Real Label: CONTRADICT
+--------------------
+Claim: Ubiquitin ligase UBC13 generates a K63-linked polyubiquitin moiety at PCNA K164.
+Predicted Label: NEI Confidence: 57.75% ---> Real Label: CONTRADICT
+--------------------
+Claim: Ultrasound guidance significantly raises the number of traumatic procedures when attempting needle insertion.
+Predicted Label: True Confidence: 36.56% ---> Real Label: CONTRADICT
+--------------------
+Claim: Up-regulation of the p53 pathway and related molecular events casues cancer resistance and results in a significantly shortened lifespan marked by senescent cells and accelerated organismal aging.
+Predicted Label: NEI Confidence: 42.53% ---> Real Label: CONTRADICT
+--------------------
+Claim: Upregulation of mosGCTL-1 is induced upon infection with West Nile virus.
+Predicted Label: True Confidence: 53.48% ---> Real Label: CONTRADICT
+--------------------
+Claim: Varenicline monotherapy is more effective after 12 weeks of treatment compared to combination nicotine replacement therapies with varenicline or bupropion.
+Predicted Label: NEI Confidence: 35.87% ---> Real Label: CONTRADICT
+--------------------
+Claim: Venules have a larger lumen diameter than arterioles.
+Predicted Label: False Confidence: 38.80% ---> Real Label: CONTRADICT
+--------------------
+Claim: Venules have a thinner or absent smooth layer compared to arterioles.
+Predicted Label: NEI Confidence: 58.39% ---> Real Label: SUPPORT
+--------------------
+Claim: Vitamin D deficiency effects the term of delivery.
+Predicted Label: NEI Confidence: 38.78% ---> Real Label: CONTRADICT
+--------------------
+Claim: Vitamin D deficiency is unrelated to birth weight.
+Predicted Label: False Confidence: 90.63% ---> Real Label: NEI
+--------------------
+Claim: Women with a higher birth weight are more likely to develop breast cancer later in life.
+Predicted Label: True Confidence: 91.56% ---> Real Label: CONTRADICT
+--------------------
+Claim: aPKCz causes tumour enhancement by affecting glutamine metabolism.
+Predicted Label: False Confidence: 50.12% ---> Real Label: CONTRADICT
+--------------------
+Claim: cSMAC formation enhances weak ligand signalling.
+Predicted Label: False Confidence: 69.81% ---> Real Label: SUPPORT
+--------------------
+Claim: mTORC2 regulates intracellular cysteine levels through xCT inhibition.
+Predicted Label: True Confidence: 77.44% ---> Real Label: NEI
+--------------------
+Claim: p16INK4A accumulation is  linked to an abnormal wound response caused by the microinvasive step of advanced Oral Potentially Malignant Lesions (OPMLs).
+Predicted Label: False Confidence: 36.77% ---> Real Label: SUPPORT
+--------------------
+
+Metriche per classe:
+SUPPORT: precision=0.4237, recall=0.3759, F1=0.3984
+CONTRADICT: precision=0.2647, recall=0.3068, F1=0.2842
+NEI: precision=0.1750, recall=0.1772, F1=0.1761
+
+Metriche aggregate:
+Macro precision: 0.2878
+Macro recall:    0.2867
+Macro F1:        0.2862
+Accuracy:        0.3033

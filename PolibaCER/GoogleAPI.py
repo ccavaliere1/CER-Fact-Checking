@@ -5,12 +5,11 @@ import warnings
 from google import genai
 from google.genai import errors, types
 
-def gemma_generate(input_text):
+def gemini_generate(input_text, model="gemma-4-31b-it"):
     client = genai.Client(
         api_key=os.environ.get("GEMINI_API_KEY"),
     )
 
-    model = "gemma-4-26b-a4b-it"
     contents = [
         types.Content(
             role="user",
@@ -21,12 +20,14 @@ def gemma_generate(input_text):
     ]
 
     generate_content_config = types.GenerateContentConfig(
+        system_instruction=("Be strict about using only the information provided in the Context from the scientific papers."),
         thinking_config=types.ThinkingConfig(
             thinking_level="HIGH",
         )
     )
 
     def standard_response():
+        print("Risposta predefinita trasmessa")
         return (
             "Label: NEI\n"
             "Justification: Impossibile ottenere una risposta dal modello.\n"
@@ -67,7 +68,7 @@ def gemma_generate(input_text):
                 answer = standard_response()
 
                 warnings.warn(
-                    "Tentativi esauriti. Restituita una risposta predefinita.",
+                    "Tentativi esauriti.",
                     RuntimeWarning,
                 )
                 break

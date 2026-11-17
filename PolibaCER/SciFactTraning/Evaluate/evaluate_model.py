@@ -1,0 +1,204 @@
+﻿import random
+from pathlib import Path
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics import classification_report
+from transformers import pipeline
+from PolibaCER.DataLoader.DataLoader import build_scifact_index, save_prediction_to_json
+from PolibaCER.FactCheck.Retriver import retrieve_scifact_top_abstracts
+from PolibaCER.FactCheck.Reasoning import reason_model_response_LOCAL, reason_model_response_GEMINI
+from PolibaCER.FactCheck.Justifyer import parse_response
+from PolibaCER.FactCheck.Response import normalize_abstract_sentences
+from openai import OpenAI
+import json
+import os
+
+
+# -------------------------------------------- GLOBAL VARIABLES ------------------------------------------- #
+DATA_PATH = Path(__file__).resolve().parent / "data" / "SciFact"
+RETRIVER_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
+ZEROSHOT_CLASSIFIER_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33"
+result_path = Path(__file__).resolve().parent / "Evaluate" / "model_evaluation_results.json"
+CLAIMS_NUMBER = 30
+LOCAL = True
+NVIDIA = False
+
+
+# -------------------------------------------- LLM RETRIVER_MODEL SETUP ------------------------------------------- #
+if LOCAL:
+    LLM_MODEL = "bartowski/Qwen2.5-7B-Instruct-GGUF:Q6_K"
+
+    client = OpenAI(
+        base_url="http://127.0.0.1:9931/v1",
+        api_key="local"
+    )
+else:
+    if NVIDIA:
+        LLM_MODEL = "google/diffusiongemma-26b-a4b-it"  # funziona ma senza giustificazioni
+
+        client = OpenAI(
+            base_url="https://integrate.api.nvidia.com/v1",
+            api_key= os.environ.get("NVIDIA_API_KEY")
+        )
+    else:
+        # LLM_MODEL = "gemma-4-26b-a4b-it"
+        # LLM_MODEL = "gemma-4-31b-it"
+        LLM_MODEL = "gemini-3.5-flash-lite"
+        print("REMOTE LLM: GOOGLE GEMINI API - {} model".format(LLM_MODEL))
+
+# -------------------------------------------- DATA SETUP ------------------------------------------- #
+def get_claim_and_labels(data_path, limit, random_selection=False):
+    CLAIMS_DEV_PATH = data_path / "claims_test.jsonl"
+
+    with CLAIMS_DEV_PATH.open("r", encoding="utf-8") as file:
+        data = [json.loads(line) for line in file]
+
+    if random_selection:
+        selected_data = random.sample(data, k=min(limit, len(data)))
+    else:
+        selected_data = data[:limit]
+
+    claims = []
+    labels = []
+
+    for item in selected_data:
+        claims.append(item["claim"])
+
+        if item["evidence"] not in [None, {}]:
+            for doc_id, evidence_list in item["evidence"].items():
+                for evidence in evidence_list:
+                    labels.append(evidence["label"])
+        else:
+            labels.append("NEI")
+
+    return claims, labels
+
+def calculate_metrics(results):
+    labels_order = ["SUPPORT", "CONTRADICT", "NEI"]
+
+    label_mapping = {
+        "TRUE": "SUPPORT",
+        "SUPPORTED": "SUPPORT",
+        "SUPPORT": "SUPPORT",
+        "FALSE": "CONTRADICT",
+        "CONTRADICTED": "CONTRADICT",
+        "CONTRADICT": "CONTRADICT",
+        "NEI": "NEI",
+        "NOT ENOUGH INFORMATION": "NEI",
+    }
+
+    y_true = []
+    y_pred = []
+
+    for item in results.values():
+        true_label = str(item["true_label"]).strip().upper()
+        predicted_label = str(item["predicted_label"]).strip().upper()
+
+        if true_label not in label_mapping:
+            raise ValueError(f"True label non riconosciuta: {true_label}")
+
+        if predicted_label not in label_mapping:
+            raise ValueError(f"Predicted label non riconosciuta: {predicted_label}")
+
+        y_true.append(label_mapping[true_label])
+        y_pred.append(label_mapping[predicted_label])
+
+    report = classification_report(
+        y_true,
+        y_pred,
+        labels=labels_order,
+        target_names=labels_order,
+        digits=4,
+        zero_division=0,
+        output_dict=True,
+    )
+
+    return report
+
+
+# -------------------------------------------- MAIN FUNCTION ------------------------------------------- #
+if __name__ == "__main__":
+
+    # ------------------------------------------- BUILD SCI-FACT INDEX ------------------------------------------- #
+    documents, doc_ids, index = build_scifact_index(
+        model=RETRIVER_MODEL,
+        data_path=DATA_PATH,
+        NEW_INDEX=False,
+    )
+
+
+
+    # ------------------------------------------- CLAIM INPUT ------------------------------------------- #
+    claims, labels = get_claim_and_labels(DATA_PATH, CLAIMS_NUMBER)
+
+    results={}
+
+    for claim in claims:
+
+        # ------------------------------------------- RETRIEVE TOP ABSTRACTS ------------------------------------------- #
+        top_abstracts = retrieve_scifact_top_abstracts(
+            claim=claim,
+            model=RETRIVER_MODEL,
+            index=index,
+            doc_ids=doc_ids,
+            documents=documents,
+            top_k=20
+        )
+
+        # IMPOSTAZIONE VALORI GLOBALI PER GLI ABSTRACTS
+        # print("\n------------------------------------------- TOP ABSTRACTS -------------------------------------------")
+        for i, result in enumerate(top_abstracts, start=1):
+            globals()[f"abstract_{i}"] = result['abstract']
+            globals()[f"docs_id{i}"] = result['doc_id']
+            globals()[f"distance_{i}"] = result['distance']
+
+
+        # ------------------------------------------- PROCESSING OF THE TOP ABSTRACTS -------------------------------------------#
+        if NVIDIA or LOCAL:
+            answer = reason_model_response_LOCAL(globals(), claim, top_abstracts, client, LLM_MODEL)
+        else:
+            answer = reason_model_response_GEMINI(globals(), claim, top_abstracts, LLM_MODEL)
+
+        # ------------------------------------------- JUSTIFICATION GENERATION ------------------------------------------- #
+        zeroshot_classifier = pipeline(
+            "zero-shot-classification", model=ZEROSHOT_CLASSIFIER_MODEL
+        )
+
+        first_label, justification, supporting, refusing, notes = parse_response(answer)
+
+        # VIENE TAGLIATA LA PARTE DEL CLASSIFICATORE E LO SI FA UN CONTROLLO SOLO SUL LABEL INIZIALE PREDELLO DAL MODELLO
+
+        if not LOCAL:  # BISOGNA EFFETTUARE UN ULTERIORE PULIZIA DEI SUPPORTING E REFUSING PERCHÉ IL MODELLO GEMMA NON RESTITUISCE SEMPRE LE FRASI IN MODO PULITO
+            supporting = normalize_abstract_sentences(supporting)
+            refusing = normalize_abstract_sentences(refusing)
+
+        results[claim] = {
+            "predicted_label": first_label,
+            "true_label": labels[claims.index(claim)],
+        }
+
+        # ----------------------------------------- SAVE PREDICTION TO JSON ----------------------------------------- #
+        save_prediction_to_json(
+            id=claims.index(claim),
+            predicted_label=first_label,
+            true_label=labels[claims.index(claim)],
+            output_file=result_path
+        )
+
+    # ------------------------------------------- CONFUSION MATRIX ------------------------------------------- #
+
+    metrics = calculate_metrics(results)
+
+    print("\nMetriche per classe:")
+    for label in ["SUPPORT", "CONTRADICT", "NEI"]:
+        print(
+            f"{label}: "
+            f"precision={metrics[label]['precision']:.4f}, "
+            f"recall={metrics[label]['recall']:.4f}, "
+            f"F1={metrics[label]['f1-score']:.4f}"
+        )
+
+    print("\nMetriche aggregate:")
+    print(f"Macro precision: {metrics['macro avg']['precision']:.4f}")
+    print(f"Macro recall:    {metrics['macro avg']['recall']:.4f}")
+    print(f"Macro F1:        {metrics['macro avg']['f1-score']:.4f}")
+    print(f"Accuracy:        {metrics['accuracy']:.4f}")

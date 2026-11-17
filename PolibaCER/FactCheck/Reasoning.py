@@ -1,4 +1,4 @@
-﻿from PolibaCER.GemmaAPI import gemma_generate
+﻿from PolibaCER.GoogleAPI import gemini_generate
 
 def llm_reasoning_template(query):
     """
@@ -19,6 +19,8 @@ def llm_reasoning_template(query):
     Elaborate the Context to generate a new information.
 
     Use only the knowledge in Context to answer.
+    
+    Be strict about using only the information provided in the Context from the scientific papers.
 
     Answer describing in a scentific way. Be formal during the answer. Use the third person.
 
@@ -78,7 +80,7 @@ def reason_model_response_LOCAL(main_global, claim, top_abstracts, client, llm_m
     # Add the abstracts to the prompt
     for i in range(1, len(top_abstracts)):
         prompt_template += f"{main_global[f'abstract_{i}']} ; "
-        prompt_template += f"{main_global[f'abstract_{len(top_abstracts)}']} [/INST]"
+    prompt_template += f"{main_global[f'abstract_{i + 1}']} [/INST]"
 
     completion = client.chat.completions.create(
         model=llm_model,
@@ -97,7 +99,7 @@ def reason_model_response_LOCAL(main_global, claim, top_abstracts, client, llm_m
 
     return answer
 
-def reason_model_response_GEMMA(main_global, claim, top_abstracts):
+def reason_model_response_GEMINI(main_global, claim, top_abstracts, LLM_MODEL):
     """
     Generate a response from the reasoning model based on the claim and abstracts.
 
@@ -105,8 +107,7 @@ def reason_model_response_GEMMA(main_global, claim, top_abstracts):
         main_global: globals() dictionary containing global variables.
         claim (str): Claim to fact-check.
         top_abstracts (list): List of top abstracts.
-        client (OpenAI): OpenAI client.
-        llm_model (str): Name of the LLM model.
+        LLM_MODEL (str): Name of the LLM model.
     """
 
     prompt_template = llm_reasoning_template(claim)
@@ -114,8 +115,8 @@ def reason_model_response_GEMMA(main_global, claim, top_abstracts):
     # Add the abstracts to the prompt
     for i in range(1, len(top_abstracts)):
         prompt_template += f"{main_global[f'abstract_{i}']} ; "
-        prompt_template += f"{main_global[f'abstract_{len(top_abstracts)}']} [/INST]"
+    prompt_template += f"{main_global[f'abstract_{i + 1}']} [/INST]"
 
-    answer = gemma_generate(prompt_template)
+    answer = gemini_generate(prompt_template, model=LLM_MODEL)
 
     return answer

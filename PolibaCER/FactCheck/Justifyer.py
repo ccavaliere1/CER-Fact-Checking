@@ -70,6 +70,7 @@ def generate_justification(zeroshot_classifier, query, justification):
     max_length = 512
     if len(justification_text) > max_length:
         justification_text = justification_text[:max_length]
+        print(f"Justification text truncated to {max_length} characters.")
 
     # Generate the final justification using the Zero-Shot Classification model
     output = zeroshot_classifier(

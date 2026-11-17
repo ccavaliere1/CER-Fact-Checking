@@ -44,43 +44,7 @@ def calculate_metrics(results):
 
     return report
 
-
-
-
-save_prediction_to_json(
-    1,
-    "SUPPORT",
-    "CONTRADICT",
-    "results.json"
-)
-save_prediction_to_json(
-    2,
-    "SUPPORT",
-    "SUPPORT",
-    "results.json"
-)
-save_prediction_to_json(
-    3,
-    "CONTRADICT",
-    "CONTRADICT",
-    "results.json"
-)
-save_prediction_to_json(
-    4,
-    "SUPPORT",
-    "NEI",
-    "results.json"
-)
-
-save_prediction_to_json(
-    5,
-    "NEI",
-    "NEI",
-    "results.json"
-)
-
-
-saved_predictions = load_predictions_from_json("results.json")
+saved_predictions = load_predictions_from_json("TestMatrixCalc.json")
 
 metrics = calculate_metrics(saved_predictions)
 

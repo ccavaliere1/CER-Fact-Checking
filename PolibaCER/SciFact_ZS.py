@@ -5,7 +5,7 @@ from sklearn.metrics import classification_report
 from transformers import pipeline
 from PolibaCER.DataLoader.DataLoader import build_scifact_index, save_prediction_to_json
 from PolibaCER.FactCheck.Retriver import retrieve_scifact_top_abstracts
-from PolibaCER.FactCheck.Reasoning import reason_model_response_LOCAL, reason_model_response_GEMMA
+from PolibaCER.FactCheck.Reasoning import reason_model_response_LOCAL, reason_model_response_GEMINI
 from PolibaCER.FactCheck.Justifyer import parse_response, generate_justification
 from PolibaCER.FactCheck.Response import extract_label_and_score, normalize_abstract_sentences
 from openai import OpenAI
@@ -17,9 +17,8 @@ import os
 DATA_PATH = Path(__file__).resolve().parent / "data" / "SciFact"
 RETRIVER_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
 ZEROSHOT_CLASSIFIER_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33"
-result_path = Path(__file__).resolve().parent / "DataLoader" / "ZS_results.json"
-CLAIMS_NUMBER = 3
-LOCAL = False
+CLAIMS_NUMBER = 300
+LOCAL = True
 NVIDIA = False
 
 
@@ -40,34 +39,54 @@ else:
             api_key= os.environ.get("NVIDIA_API_KEY")
         )
     else:
-        print("REMOTE LLM: GOOGLE GEMINI API - GEMMA 4 26B MODEL")
+        # LLM_MODEL = "gemma-4-26b-a4b-it"
+        # LLM_MODEL = "gemma-4-31b-it"
+        LLM_MODEL = "gemini-3.5-flash-lite"
+        #LLM_MODEL = "gemini-4-hydrogen"
+        print("REMOTE LLM: GOOGLE GEMINI API - {} model".format(LLM_MODEL))
+
+result_path = Path(__file__).resolve().parent / "DataLoader" / f"ZS_{LLM_MODEL}.json"
 
 # -------------------------------------------- DATA SETUP ------------------------------------------- #
-def get_claim_and_labels(data_path, limit, random_selection=False):
-    CLAIMS_DEV_PATH = data_path / "claims_train_snap.jsonl"
+def get_claim_records(data_path, limit, random_selection=False):
+    claims_path = data_path / "claims_test.jsonl"
 
-    with CLAIMS_DEV_PATH.open("r", encoding="utf-8") as file:
+    with claims_path.open("r", encoding="utf-8") as file:
         data = [json.loads(line) for line in file]
 
-    if random_selection:
-        selected_data = random.sample(data, k=min(limit, len(data)))
-    else:
-        selected_data = data[:limit]
+    # if random_selection:
+    #     data = random.sample(data, k=min(limit, len(data)))
+    # else:
+        #data = data[:limit]
 
-    claims = []
-    labels = []
+    records = []
 
-    for item in selected_data:
-        claims.append(item["claim"])
+    for item in data:
+        evidence = item.get("evidence") or {}
 
-        if item["evidence"] not in [None, {}]:
-            for doc_id, evidence_list in item["evidence"].items():
-                for evidence in evidence_list:
-                    labels.append(evidence["label"])
+        if not evidence:
+            label = "NEI"
         else:
-            labels.append("NEI")
+            labels = {
+                annotation["label"].upper()
+                for annotations in evidence.values()
+                for annotation in annotations
+            }
 
-    return claims, labels
+            if len(labels) != 1:
+                raise ValueError(
+                    f"Label multiple per claim {item['id']}: {labels}"
+                )
+
+            label = labels.pop()
+
+        records.append({
+            "id": item["id"],
+            "claim": item["claim"],
+            "true_label": label,
+        })
+
+    return records
 
 def calculate_metrics(results):
     labels_order = ["SUPPORT", "CONTRADICT", "NEI"]
@@ -125,20 +144,20 @@ if __name__ == "__main__":
 
 
     # ------------------------------------------- CLAIM INPUT ------------------------------------------- #
-    claims, labels = get_claim_and_labels(DATA_PATH, CLAIMS_NUMBER)
+    records = get_claim_records(DATA_PATH, CLAIMS_NUMBER)
 
     results={}
 
-    for claim in claims:
+    for record_index, record in enumerate(records):
 
         # ------------------------------------------- RETRIEVE TOP ABSTRACTS ------------------------------------------- #
         top_abstracts = retrieve_scifact_top_abstracts(
-            claim=claim,
+            claim=record["claim"],
             model=RETRIVER_MODEL,
             index=index,
             doc_ids=doc_ids,
             documents=documents,
-            top_k=4
+            top_k=20
         )
 
         # IMPOSTAZIONE VALORI GLOBALI PER GLI ABSTRACTS
@@ -151,9 +170,9 @@ if __name__ == "__main__":
 
         # ------------------------------------------- PROCESSING OF THE TOP ABSTRACTS -------------------------------------------#
         if NVIDIA or LOCAL:
-            answer = reason_model_response_LOCAL(globals(), claim, top_abstracts, client, LLM_MODEL)
+            answer = reason_model_response_LOCAL(globals(), record["claim"], top_abstracts, client, LLM_MODEL)
         else:
-            answer = reason_model_response_GEMMA(globals(), claim, top_abstracts)
+            answer = reason_model_response_GEMINI(globals(), record["claim"], top_abstracts, LLM_MODEL)
 
         # ------------------------------------------- JUSTIFICATION GENERATION ------------------------------------------- #
         zeroshot_classifier = pipeline(
@@ -164,7 +183,7 @@ if __name__ == "__main__":
 
         # Generate the justification for the claim
         # in realtà classifica la giustificazione con il claim, la justification é generata dal modello di ragionamento
-        result = generate_justification(zeroshot_classifier, claim, justification)
+        result = generate_justification(zeroshot_classifier, record["claim"], justification)
 
         # ----------------------------------------- CREATE FINAL RESPONSE ----------------------------------------- #
         predicted_label, score_label = extract_label_and_score(result)
@@ -176,17 +195,17 @@ if __name__ == "__main__":
             supporting = normalize_abstract_sentences(supporting)
             refusing = normalize_abstract_sentences(refusing)
 
-        results[claim] = {
+        results[record["claim"]] = {
             "predicted_label": predicted_label,
-            "true_label": labels[claims.index(claim)],
+            "true_label": record["true_label"],
             "confidence": confidence,
         }
 
         # ----------------------------------------- SAVE PREDICTION TO JSON ----------------------------------------- #
         save_prediction_to_json(
-            id=claims.index(claim),
+            id=record_index,
             predicted_label=predicted_label,
-            true_label=labels[claims.index(claim)],
+            true_label=record["true_label"],
             output_file=result_path
         )
 

@@ -4,7 +4,7 @@ from sentence_transformers import SentenceTransformer
 from transformers import pipeline
 from PolibaCER.DataLoader.DataLoader import load_pubmed_embeddings
 from PolibaCER.FactCheck.Retriver import retrieve_pubmed_top_abstracts
-from PolibaCER.FactCheck.Reasoning import reason_model_response_LOCAL, reason_model_response_GEMMA
+from PolibaCER.FactCheck.Reasoning import reason_model_response_LOCAL, reason_model_response_GEMINI
 from PolibaCER.FactCheck.Justifyer import parse_response, generate_justification
 from PolibaCER.FactCheck.Response import extract_label_and_score, extract_supporting_and_refusing_sentences, \
     proccess_abstracts, normalize_abstract_sentences
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     if NVIDIA or LOCAL:
         answer = reason_model_response_LOCAL(globals(), claim, top_abstracts, client, LLM_MODEL)
     else:
-        answer = reason_model_response_GEMMA(globals(), claim, top_abstracts)
+        answer = reason_model_response_GEMINI(globals(), claim, top_abstracts)
 
 
     # ------------------------------------------- JUSTIFICATION GENERATION ------------------------------------------- #
