@@ -1,5 +1,4 @@
-﻿from __future__ import annotations
-import argparse
+﻿import argparse
 import json
 import random
 from dataclasses import dataclass
@@ -17,9 +16,17 @@ from transformers import (
     get_linear_schedule_with_warmup,
 )
 
-LABELS = ["SUPPORT", "CONTRADICT", "NEI"]
+LABELS = ["TRUE", "FALSE", "NEI"]
 LABEL2ID = {label: i for i, label in enumerate(LABELS)}
 ID2LABEL = {i: label for label, i in LABEL2ID.items()}
+
+SCIFACT_LABELS = {
+    "SUPPORT": "TRUE",
+    "CONTRADICT": "FALSE",
+    "TRUE": "TRUE",
+    "FALSE": "FALSE",
+    "NEI": "NEI",
+}
 
 def set_seed(seed: int) -> None:
     random.seed(seed)
@@ -81,10 +88,10 @@ def get_label(item: dict[str, Any]) -> str:
 
     label = labels.pop()
 
-    if label not in LABEL2ID:
+    if label not in SCIFACT_LABELS:
         raise ValueError(f"Label non riconosciuta: {label}")
 
-    return label
+    return SCIFACT_LABELS[label]
 
 
 def load_scifact_examples(claims_path: Path, corpus_path: Path) -> list[dict[str, Any]]:
@@ -117,9 +124,7 @@ class SciFactDataset(Dataset):
         texts = [
             (
                 example["claim"],
-                example["evidence"]
-                if example["evidence"]
-                else "No evidence was retrieved for this claim.",
+                example["evidence"] if example["evidence"] else "No evidence was retrieved for this claim.",
             )
             for example in examples
         ]
@@ -180,12 +185,8 @@ def evaluate(model, loader: DataLoader, device: torch.device) -> tuple[float, li
     return total_loss / max(len(loader), 1), targets, predictions
 
 
-def save_finetuned_model(
-    model,
-    tokenizer,
-    output_dir: Path,
-    config: TrainConfig,
-) -> None:
+def save_finetuned_model(model, tokenizer, output_dir: Path, config: TrainConfig) -> None:
+
     output_dir.mkdir(parents=True, exist_ok=True)
 
     model.config.label2id = LABEL2ID
@@ -206,10 +207,8 @@ def save_finetuned_model(
         )
 
 
-def load_finetuned_model(
-    model_dir: str | Path,
-    device: str | None = None,
-):
+def load_finetuned_model(model_dir: str | Path, device: str | None = None):
+
     model_dir = Path(model_dir)
     selected_device = torch.device(
         device or ("cuda" if torch.cuda.is_available() else "cpu")
@@ -223,17 +222,18 @@ def load_finetuned_model(
     return model, tokenizer, selected_device
 
 
-def predict(model, tokenizer, claim: str, evidence: str = "", device: torch.device | None = None, max_length: int = 512) -> dict[str, Any]:
+
+def predict(model, tokenizer, claim: str, justification: str = "", device: torch.device | None = None, max_length: int = 512) -> dict[str, Any]:
 
     if device is None:
         device = next(model.parameters()).device
 
-    if not evidence:
-        evidence = "No evidence was retrieved for this claim."
+    if not justification:
+        justification = "No justification was retrieved for this claim."
 
     encoded = tokenizer(
         claim,
-        evidence,
+        justification,
         truncation=True,
         max_length=max_length,
         return_tensors="pt",
@@ -278,30 +278,12 @@ def train(train_examples: list[dict[str, Any]], output_dir: Path, config: TrainC
         stratify=labels,
     )
 
-    train_dataset = SciFactDataset(
-        train_data,
-        tokenizer,
-        config.max_length,
-    )
-    validation_dataset = SciFactDataset(
-        validation_data,
-        tokenizer,
-        config.max_length,
-    )
+    train_dataset = SciFactDataset(train_data, tokenizer, config.max_length)
+    validation_dataset = SciFactDataset(validation_data, tokenizer, config.max_length)
+    train_loader = DataLoader(train_dataset, batch_size=config.batch_size, shuffle=True)
+    validation_loader = DataLoader(validation_dataset, batch_size=config.batch_size, shuffle=False)
 
-    train_loader = DataLoader(
-        train_dataset,
-        batch_size=config.batch_size,
-        shuffle=True,
-    )
-    validation_loader = DataLoader(
-        validation_dataset,
-        batch_size=config.batch_size,
-    )
-
-    device = torch.device(
-        "cuda" if torch.cuda.is_available() else "cpu"
-    )
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
     class_counts = torch.bincount(train_dataset.labels, minlength=len(LABELS))
@@ -386,34 +368,21 @@ def train(train_examples: list[dict[str, Any]], output_dir: Path, config: TrainC
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("--data-dir", type=Path, default=Path(__file__).resolve().parents[1]/"data"/"SciFact")
-    parser.add_argument("--output-dir", type=Path, default=Path("models") / "cer-deberta-v3-large-scifact")
-    parser.add_argument("--model-name", default="microsoft/deberta-v3-large")
-    parser.add_argument("--epochs", type=int, default=3)
-    parser.add_argument("--batch-size", type=int, default=4)
-    parser.add_argument("--learning-rate", type=float, default=2e-5)
-    parser.add_argument("--max-length", type=int, default=512)
-    parser.add_argument("--seed", type=int, default=42)
-
-    args = parser.parse_args()
-
     config = TrainConfig(
-        model_name=args.model_name,
-        epochs=args.epochs,
-        batch_size=args.batch_size,
-        learning_rate=args.learning_rate,
-        max_length=args.max_length,
-        seed=args.seed,
+        model_name="microsoft/deberta-v3-large",
+        epochs=8,
+        batch_size=4,
+        learning_rate=2e-5,
+        max_length=512,
+        seed=42,
     )
 
     train_examples = load_scifact_examples(
-        args.data_dir / "claims_train.jsonl",
-        args.data_dir / "corpus.jsonl",
+        Path(__file__).resolve().parents[1]/"data"/"SciFact" / "claims_train.jsonl",
+        Path(__file__).resolve().parents[1]/"data"/"SciFact" / "corpus.jsonl",
     )
 
-    train(train_examples, args.output_dir, config)
+    train(train_examples, Path("models") / "cer-deberta-v3-large-scifact", config)
 
 
 if __name__ == "__main__":
