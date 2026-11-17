@@ -1,4 +1,4 @@
-﻿from PolibaCER.GoogleAPI import gemini_generate
+﻿from PolibaCER.FactCheck.GoogleAPI import gemini_generate
 
 def llm_reasoning_template(query):
     """
