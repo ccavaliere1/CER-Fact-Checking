@@ -1,5 +1,4 @@
-﻿import argparse
-import json
+﻿import json
 import random
 from dataclasses import dataclass
 from pathlib import Path
@@ -7,18 +6,23 @@ from typing import Any
 import numpy as np
 import torch
 from tqdm import tqdm
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, f1_score
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Dataset
+from sentence_transformers import SentenceTransformer
 from transformers import (
     AutoModelForSequenceClassification,
     AutoTokenizer,
     get_linear_schedule_with_warmup,
 )
+from PolibaCER.DataLoader.DataLoader import build_scifact_index
+from PolibaCER.FactCheck.Retriver import retrieve_scifact_top_abstracts
 
+corpus_path = Path(__file__).resolve().parents[1] / "data" / "SciFact"
 LABELS = ["TRUE", "FALSE", "NEI"]
 LABEL2ID = {label: i for i, label in enumerate(LABELS)}
 ID2LABEL = {i: label for label, i in LABEL2ID.items()}
+NO_EVIDENCE_TEXT = "NEI - No evidence was retrieved for this claim. No scientific evidence supports or contradicts this claim."
 
 SCIFACT_LABELS = {
     "SUPPORT": "TRUE",
@@ -124,7 +128,7 @@ class SciFactDataset(Dataset):
         texts = [
             (
                 example["claim"],
-                example["evidence"] if example["evidence"] else "No evidence was retrieved for this claim.",
+                example["evidence"] if example["evidence"] else NO_EVIDENCE_TEXT,
             )
             for example in examples
         ]
@@ -160,10 +164,11 @@ class TrainConfig:
     weight_decay: float = 0.01
     warmup_ratio: float = 0.1
     validation_size: float = 0.1
+    validation_top_k: int = 5
     seed: int = 42
 
 
-def evaluate(model, loader: DataLoader, device: torch.device) -> tuple[float, list[int], list[int]]:
+def evaluate(model, loader: DataLoader, device: torch.device) -> tuple[float, list[int], list[int], float]:
 
     model.eval()
     total_loss = 0.0
@@ -182,7 +187,47 @@ def evaluate(model, loader: DataLoader, device: torch.device) -> tuple[float, li
             predictions.extend(output.logits.argmax(dim=-1).cpu().tolist())
             targets.extend(batch["labels"].cpu().tolist())
 
-    return total_loss / max(len(loader), 1), targets, predictions
+    macro_f1 = f1_score(
+        targets,
+        predictions,
+        labels=list(range(len(LABELS))),
+        average="macro",
+        zero_division=0,
+    )
+
+    return total_loss / max(len(loader), 1), targets, predictions, macro_f1
+
+
+def build_retrieved_validation_examples(examples: list[dict[str, Any]], retriever_model, index, doc_ids, documents, top_k: int) -> list[dict[str, Any]]:
+
+    retrieved_examples = []
+
+    for example in examples:
+        if example["label"] == "NEI":
+            evidence = NO_EVIDENCE_TEXT
+        else:
+            retrieved = retrieve_scifact_top_abstracts(
+                claim=example["claim"],
+                model=retriever_model,
+                index=index,
+                doc_ids=doc_ids,
+                documents=documents,
+                top_k=top_k,
+            )
+
+            evidence = "\n".join(
+                result["abstract"]
+                for result in retrieved
+            )
+
+        retrieved_examples.append(
+            {
+                **example,
+                "evidence": evidence,
+            }
+        )
+
+    return retrieved_examples
 
 
 def save_finetuned_model(model, tokenizer, output_dir: Path, config: TrainConfig) -> None:
@@ -229,7 +274,7 @@ def predict(model, tokenizer, claim: str, justification: str = "", device: torch
         device = next(model.parameters()).device
 
     if not justification:
-        justification = "No justification was retrieved for this claim."
+        justification = NO_EVIDENCE_TEXT
 
     encoded = tokenizer(
         claim,
@@ -278,8 +323,19 @@ def train(train_examples: list[dict[str, Any]], output_dir: Path, config: TrainC
         stratify=labels,
     )
 
+    validation_retriever = SentenceTransformer("all-MiniLM-L6-v2", device="cpu")
+    documents, doc_ids, retrieval_index = build_scifact_index(model=validation_retriever, data_path=corpus_path, NEW_INDEX=False)
+    retrieved_validation_data = build_retrieved_validation_examples(
+        validation_data,
+        validation_retriever,
+        retrieval_index,
+        doc_ids,
+        documents,
+        config.validation_top_k,
+    )
+
     train_dataset = SciFactDataset(train_data, tokenizer, config.max_length)
-    validation_dataset = SciFactDataset(validation_data, tokenizer, config.max_length)
+    validation_dataset = SciFactDataset(retrieved_validation_data, tokenizer, config.max_length)
     train_loader = DataLoader(train_dataset, batch_size=config.batch_size, shuffle=True)
     validation_loader = DataLoader(validation_dataset, batch_size=config.batch_size, shuffle=False)
 
@@ -304,7 +360,7 @@ def train(train_examples: list[dict[str, Any]], output_dir: Path, config: TrainC
         num_training_steps=total_steps,
     )
 
-    best_validation_loss = float("inf")
+    best_validation_f1 = -1.0
 
     for epoch in range(config.epochs):
         model.train()
@@ -335,16 +391,13 @@ def train(train_examples: list[dict[str, Any]], output_dir: Path, config: TrainC
                 optimizer.step()
                 scheduler.step()
 
-        validation_loss, y_true, y_pred = evaluate(
-            model,
-            validation_loader,
-            device,
-        )
+        validation_loss, y_true, y_pred, validation_f1 = evaluate(model, validation_loader, device)
 
         print(
             f"Epoch {epoch + 1}/{config.epochs} - "
             f"validation loss: {validation_loss:.4f}"
         )
+        print(f"Validation macro-F1: {validation_f1:.4f}")
         print(
             classification_report(
                 y_true,
@@ -355,14 +408,9 @@ def train(train_examples: list[dict[str, Any]], output_dir: Path, config: TrainC
             )
         )
 
-        if validation_loss < best_validation_loss:
-            best_validation_loss = validation_loss
-            save_finetuned_model(
-                model,
-                tokenizer,
-                output_dir,
-                config,
-            )
+        if validation_f1 > best_validation_f1:
+            best_validation_f1 = validation_f1
+            save_finetuned_model(model, tokenizer, output_dir, config)
 
     print(f"Modello salvato in: {output_dir}")
 
@@ -371,11 +419,14 @@ def main() -> None:
     config = TrainConfig(
         model_name="microsoft/deberta-v3-large",
         epochs=8,
-        batch_size=4,
-        learning_rate=2e-5,
+        batch_size=2,
+        warmup_ratio=0.1,
+        weight_decay=0.01,
+        learning_rate=1e-5,
         max_length=512,
         seed=42,
-    )
+    ) # Epochs: 4, Batch size: 4, Learning rate: 2e-5, Max length: 512, Seed: 42 -> 0.5986
+
 
     train_examples = load_scifact_examples(
         Path(__file__).resolve().parents[1]/"data"/"SciFact" / "claims_train.jsonl",

@@ -3,10 +3,13 @@ from pathlib import Path
 import torch
 from sklearn.metrics import classification_report, confusion_matrix
 from transformers import pipeline
-
+from PolibaCER.SciFactTraning.traning_model import load_finetuned_model, predict
 
 MODEL_NAME = "MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33"
 LABELS = ["SUPPORT", "CONTRADICT", "NEI"]
+BASE_PATH = Path(__file__).resolve().parents[2]
+model_dir = BASE_PATH / "models" / "cer-deberta-v3-large-scifact"
+TRAINED_CLASSIFIER_MODEL, tokenizer, device = load_finetuned_model(model_dir)
 
 
 def load_corpus(path: Path) -> dict[str, dict]:
@@ -53,27 +56,16 @@ def get_gold_label(item: dict) -> str:
     return labels.pop()
 
 
-def evaluate(data_dir: Path, device: str | None, limit: int | None):
+def evaluate(data_dir: Path, device: str | None, limit: int | None, FN=True):
     selected_device = (
         0
         if device == "cuda" or (device is None and torch.cuda.is_available())
         else -1
     )
 
-    classifier = pipeline(
-        task="zero-shot-classification",
-        model=MODEL_NAME,
-        device=selected_device,
-    )
-
     corpus = load_corpus(data_dir / "corpus.jsonl")
-
-    with (data_dir / "claims_test.jsonl").open(
-        "r",
-        encoding="utf-8",
-    ) as file:
+    with (data_dir / "claims_test.jsonl").open("r",encoding="utf-8") as file:
         claims = [json.loads(line) for line in file]
-
     if limit is not None:
         claims = claims[:limit]
 
@@ -88,21 +80,51 @@ def evaluate(data_dir: Path, device: str | None, limit: int | None):
         )
 
         if not evidence:
-            evidence = "No evidence is available for this claim."
+            evidence = "No evidence is available for this claim. No scientific evidence supports or contradicts this claim."
 
-        result = classifier(
-            sequences=claim,
-            candidate_labels=LABELS,
-            hypothesis_template=(
-                "The claim is {} according to this scientific evidence: "
-                + evidence
-            ),
-            multi_label=False,
-        )
+        if FN:
+            result = predict(
+                model=TRAINED_CLASSIFIER_MODEL,
+                tokenizer=tokenizer,
+                claim=claim,
+                justification=(
+                    "The claim is {} according to this scientific evidence: "
+                    + evidence
+                ),
+                device=device,
+            )
 
-        predicted_label = result["labels"][0]
-        confidence = result["scores"][0]
-        true_label = get_gold_label(item)
+            model_label_mapping = {
+                "TRUE": "SUPPORT",
+                "FALSE": "CONTRADICT",
+                "NEI": "NEI",
+            }
+
+            predicted_label = model_label_mapping[result["label"]]
+            confidence = result["confidence"]
+            true_label = get_gold_label(item)
+
+        else:
+            classifier = pipeline(
+                task="zero-shot-classification",
+                model=MODEL_NAME,
+                device=selected_device,
+            )
+
+            result = classifier(
+                sequences=claim,
+                candidate_labels=LABELS,
+                hypothesis_template=(
+                    "The claim is {} according to this scientific evidence: "
+                    + evidence
+                ),
+                multi_label=False,
+            )
+
+            predicted_label = result["labels"][0]
+            confidence = result["scores"][0]
+            true_label = get_gold_label(item)
+
 
         y_true.append(true_label)
         y_pred.append(predicted_label)
@@ -132,14 +154,8 @@ def evaluate(data_dir: Path, device: str | None, limit: int | None):
 
 
 def main():
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-
-    evaluate(
-        data_dir=Path(__file__).resolve().parents[2] / "data" / "SciFact",
-        device=device,
-        limit=None
-    )
-
+    #evaluate(data_dir=Path(__file__).resolve().parents[2] / "data" / "SciFact", device=device, limit=None, FN=False)
+    evaluate(data_dir=Path(__file__).resolve().parents[2] / "data" / "SciFact", device=device, limit=None, FN=True)
 
 if __name__ == "__main__":
     main()

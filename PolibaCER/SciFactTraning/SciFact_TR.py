@@ -2,7 +2,7 @@
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics import classification_report
-from PolibaCER.DataLoader.DataLoader import build_scifact_index
+from PolibaCER.DataLoader.DataLoader import build_scifact_index, save_prediction_to_json
 from PolibaCER.FactCheck.Retriver import retrieve_scifact_top_abstracts
 from PolibaCER.FactCheck.Reasoning import reason_model_response_LOCAL, reason_model_response_GEMINI
 from PolibaCER.FactCheck.Justifyer import parse_response
@@ -19,9 +19,10 @@ DATA_PATH = BASE_PATH / "data" / "SciFact"
 RETRIVER_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
 model_dir = BASE_PATH / "models" / "cer-deberta-v3-large-scifact"
 TRAINED_CLASSIFIER_MODEL, tokenizer, device = load_finetuned_model(model_dir)
-CLAIMS_NUMBER = 10
+result_path = (Path(__file__).resolve().parents[1] / "DataLoader" / "TR_GEMINI3-5_flash_lite.json")
+CLAIMS_NUMBER = 100
+LOCAL = True
 NVIDIA = False
-LOCAL = False
 
 
 # -------------------------------------------- LLM RETRIVER_MODEL SETUP ------------------------------------------- #
@@ -41,32 +42,53 @@ else:
             api_key= os.environ.get("NVIDIA_API_KEY")
         )
     else:
-        print("REMOTE LLM: GOOGLE GEMINI API - GEMMA 4 26B RETRIVER_MODEL")
+        # LLM_MODEL = "gemma-4-26b-a4b-it"
+        # LLM_MODEL = "gemma-4-31b-it"
+        LLM_MODEL = "gemini-3.5-flash-lite"
+        #LLM_MODEL = "gemini-4-hydrogen"
+        print("REMOTE LLM: GOOGLE GEMINI API - {} model".format(LLM_MODEL))
 
 # -------------------------------------------- DATA SETUP ------------------------------------------- #
-def get_claim_and_labels(data_path, limit):
-    CLAIMS_DEV_PATH = data_path / "claims_test.jsonl"
 
-    with CLAIMS_DEV_PATH.open("r", encoding="utf-8") as file:
+def get_claim_records(data_path, limit, random_selection=False):
+    claims_path = data_path / "claims_test.jsonl"
+
+    with claims_path.open("r", encoding="utf-8") as file:
         data = [json.loads(line) for line in file]
 
-    # Seleziona casualmente al massimo `limit` elementi
-    selected_data = random.sample(data, k=min(limit, len(data)))
+    # if random_selection:
+    #     data = random.sample(data, k=min(limit, len(data)))
+    # else:
+        #data = data[:limit]
 
-    claims = []
-    labels = []
+    records = []
 
-    for item in selected_data:
-        claims.append(item["claim"])
+    for item in data:
+        evidence = item.get("evidence") or {}
 
-        if item["evidence"] not in [None, {}]:
-            for doc_id, evidence_list in item["evidence"].items():
-                for evidence in evidence_list:
-                    labels.append(evidence["label"])
+        if not evidence:
+            label = "NEI"
         else:
-            labels.append("NEI")
+            labels = {
+                annotation["label"].upper()
+                for annotations in evidence.values()
+                for annotation in annotations
+            }
 
-    return claims, labels
+            if len(labels) != 1:
+                raise ValueError(
+                    f"Label multiple per claim {item['id']}: {labels}"
+                )
+
+            label = labels.pop()
+
+        records.append({
+            "id": item["id"],
+            "claim": item["claim"],
+            "true_label": label,
+        })
+
+    return records
 
 def calculate_metrics(results):
     labels_order = ["SUPPORT", "CONTRADICT", "NEI"]
@@ -124,15 +146,15 @@ if __name__ == "__main__":
 
 
     # ------------------------------------------- CLAIM INPUT ------------------------------------------- #
-    claims, labels = get_claim_and_labels(DATA_PATH, CLAIMS_NUMBER)
+    records = get_claim_records(DATA_PATH, CLAIMS_NUMBER)
 
     results={}
 
-    for claim in claims:
+    for record_index, record in enumerate(records):
 
         # ------------------------------------------- RETRIEVE TOP ABSTRACTS ------------------------------------------- #
         top_abstracts = retrieve_scifact_top_abstracts(
-            claim=claim,
+            claim=record["claim"],
             model=RETRIVER_MODEL,
             index=index,
             doc_ids=doc_ids,
@@ -150,28 +172,33 @@ if __name__ == "__main__":
 
         # ------------------------------------------- PROCESSING OF THE TOP ABSTRACTS -------------------------------------------#
         if NVIDIA or LOCAL:
-            answer = reason_model_response_LOCAL(globals(), claim, top_abstracts, client, LLM_MODEL)
+            answer = reason_model_response_LOCAL(globals(), record["claim"], top_abstracts, client, LLM_MODEL)
         else:
-            answer = reason_model_response_GEMINI(globals(), claim, top_abstracts)
+            answer = reason_model_response_GEMINI(globals(), record["claim"], top_abstracts, LLM_MODEL)
 
         # ------------------------------------------- JUSTIFICATION GENERATION ------------------------------------------- #
 
         first_label, justification, supporting, refusing, notes = parse_response(answer)
 
         # LA FUNZIONE PREDICT EQUIVALE ALLA "generate_justification" del ZEROSHOOT RETRIVER_MODEL
-        # claim = claim
-        # evidence = justification
+        # Generate the justification text
+        justification_text = (
+            f'Justification: "{justification}"'
+        )
+
+        # Limit the justification text to a maximum length
+        max_length = 512
+        if len(justification_text) > max_length:
+            justification_text = justification_text[:max_length]
+            print(f"Justification text truncated to {max_length} characters.")
+
         result = predict(
             model=TRAINED_CLASSIFIER_MODEL,
             tokenizer=tokenizer,
-            claim=claim,
-            evidence=justification,
+            claim=record["claim"],
+            justification=justification_text,
             device=device,
         )
-
-        # Generate the justification for the claim
-        # in realtà classifica la giustificazione con il claim, la justification é generata dal modello di ragionamento
-        # result = generate_justification(zeroshot_classifier, claim, justification)
 
         # ----------------------------------------- CREATE FINAL RESPONSE ----------------------------------------- #
         probabilities = result["probabilities"]
@@ -181,19 +208,24 @@ if __name__ == "__main__":
             key=lambda item: item[1],
         )
 
-        # # Calculate the confidence score
-        # confidence = f"{score_label * 100:.2f}%"
-
         if not LOCAL:  # BISOGNA EFFETTUARE UN ULTERIORE PULIZIA DEI SUPPORTING E REFUSING PERCHÉ IL MODELLO GEMMA NON RESTITUISCE SEMPRE LE FRASI IN MODO PULITO
             supporting = normalize_abstract_sentences(supporting)
             refusing = normalize_abstract_sentences(refusing)
 
 
-        results[claim] = {
+        results[record["claim"]] = {
             "predicted_label": predicted_label,
-            "true_label": labels[claims.index(claim)],
+            "true_label": record["true_label"],
             "confidence": confidence,
         }
+
+        # ----------------------------------------- SAVE PREDICTION TO JSON ----------------------------------------- #
+        save_prediction_to_json(
+            id=record_index,
+            predicted_label=predicted_label,
+            true_label=record["true_label"],
+            output_file=result_path
+        )
 
     for claim, prediction in results.items():
         print(f"Claim: {claim}")
