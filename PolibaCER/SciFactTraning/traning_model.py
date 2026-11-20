@@ -8,7 +8,7 @@ import torch
 from tqdm import tqdm
 from sklearn.metrics import classification_report, f1_score
 from sklearn.model_selection import train_test_split
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader, Dataset, SubsetRandomSampler
 from sentence_transformers import SentenceTransformer
 from transformers import (
     AutoModelForSequenceClassification,
@@ -17,12 +17,14 @@ from transformers import (
 )
 from PolibaCER.DataLoader.DataLoader import build_scifact_index
 from PolibaCER.FactCheck.Retriver import retrieve_scifact_top_abstracts
+from collections import Counter
 
 corpus_path = Path(__file__).resolve().parents[1] / "data" / "SciFact"
 LABELS = ["TRUE", "FALSE", "NEI"]
 LABEL2ID = {label: i for i, label in enumerate(LABELS)}
 ID2LABEL = {i: label for label, i in LABEL2ID.items()}
-NO_EVIDENCE_TEXT = "NEI - No evidence was retrieved for this claim. No scientific evidence supports or contradicts this claim."
+STANDARD_JUSTIFICATION = "No justification provided."
+NEI_JUSTIFICATION = "NEI - Not enough information to evaluate this claim."
 
 SCIFACT_LABELS = {
     "SUPPORT": "TRUE",
@@ -113,7 +115,7 @@ def load_scifact_examples(claims_path: Path, corpus_path: Path) -> list[dict[str
                     "claim": item["claim"],
                     "evidence": evidence_to_text(evidence, corpus)
                     if evidence
-                    else "",
+                    else item.get("justification", STANDARD_JUSTIFICATION),
                     "label": get_label(item),
                 }
             )
@@ -128,7 +130,7 @@ class SciFactDataset(Dataset):
         texts = [
             (
                 example["claim"],
-                example["evidence"] if example["evidence"] else NO_EVIDENCE_TEXT,
+                example["evidence"] if example["evidence"] else "",
             )
             for example in examples
         ]
@@ -204,7 +206,7 @@ def build_retrieved_validation_examples(examples: list[dict[str, Any]], retrieve
 
     for example in examples:
         if example["label"] == "NEI":
-            evidence = NO_EVIDENCE_TEXT
+            evidence = "No evidence available. Not enough information to evaluate this claim."
         else:
             retrieved = retrieve_scifact_top_abstracts(
                 claim=example["claim"],
@@ -220,12 +222,10 @@ def build_retrieved_validation_examples(examples: list[dict[str, Any]], retrieve
                 for result in retrieved
             )
 
-        retrieved_examples.append(
-            {
-                **example,
-                "evidence": evidence,
-            }
-        )
+        retrieved_examples.append({
+            **example,
+            "evidence": evidence,
+        })
 
     return retrieved_examples
 
@@ -274,7 +274,7 @@ def predict(model, tokenizer, claim: str, justification: str = "", device: torch
         device = next(model.parameters()).device
 
     if not justification:
-        justification = NO_EVIDENCE_TEXT
+        justification = STANDARD_JUSTIFICATION
 
     encoded = tokenizer(
         claim,
@@ -336,16 +336,63 @@ def train(train_examples: list[dict[str, Any]], output_dir: Path, config: TrainC
 
     train_dataset = SciFactDataset(train_data, tokenizer, config.max_length)
     validation_dataset = SciFactDataset(retrieved_validation_data, tokenizer, config.max_length)
-    train_loader = DataLoader(train_dataset, batch_size=config.batch_size, shuffle=True)
+
+    print(
+        "Validation class distribution:",
+        Counter(example["label"] for example in retrieved_validation_data),
+    )
+    print(
+        "Validation examples:",
+        len(retrieved_validation_data),
+    )
+
+
+    class_counts = torch.bincount(train_dataset.labels, minlength=len(LABELS)).long()
+    max_class_count = int(class_counts.max().item())
+    balanced_indices = []
+    rng = np.random.default_rng(config.seed)
+
+    for class_id in range(len(LABELS)):
+        class_indices = np.flatnonzero(
+            train_dataset.labels.numpy() == class_id
+        )
+
+        if len(class_indices) == 0:
+            raise ValueError(
+                f"La classe {ID2LABEL[class_id]} non contiene esempi nel train set."
+            )
+
+        sampled_indices = rng.choice(
+            class_indices,
+            size=max_class_count,
+            replace=True,
+        )
+        balanced_indices.extend(sampled_indices.tolist())
+
+    rng.shuffle(balanced_indices)
+    train_sampler = SubsetRandomSampler(balanced_indices)
+
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=config.batch_size,
+        sampler=train_sampler,
+    )
     validation_loader = DataLoader(validation_dataset, batch_size=config.batch_size, shuffle=False)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
-    class_counts = torch.bincount(train_dataset.labels, minlength=len(LABELS))
-    class_weights = class_counts.sum() / class_counts.clamp_min(1)
-    class_weights = class_weights / class_weights.mean()
-    class_weights = class_weights.to(device)
+    class_weights = torch.ones(
+        len(LABELS),
+        dtype=torch.float32,
+        device=device,
+    )
+
+    print("Train class distribution:", {
+        ID2LABEL[index]: int(class_counts[index])
+        for index in range(len(LABELS))
+    })
+    print("Balanced samples per class:", max_class_count)
 
     optimizer = torch.optim.AdamW(
         model.parameters(),
@@ -418,7 +465,7 @@ def train(train_examples: list[dict[str, Any]], output_dir: Path, config: TrainC
 def main() -> None:
     config = TrainConfig(
         model_name="microsoft/deberta-v3-large",
-        epochs=8,
+        epochs=4,
         batch_size=2,
         warmup_ratio=0.1,
         weight_decay=0.01,
@@ -429,7 +476,7 @@ def main() -> None:
 
 
     train_examples = load_scifact_examples(
-        Path(__file__).resolve().parents[1]/"data"/"SciFact" / "claims_train.jsonl",
+        Path(__file__).resolve().parents[1]/"data"/"SciFact" / "claims_train_justifications_evidence.jsonl",
         Path(__file__).resolve().parents[1]/"data"/"SciFact" / "corpus.jsonl",
     )
 

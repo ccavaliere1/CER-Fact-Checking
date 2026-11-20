@@ -1,0 +1,1202 @@
+{
+    "0": [
+        "TRUE",
+        "NEI"
+    ],
+    "1": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "2": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "3": [
+        "TRUE",
+        "NEI"
+    ],
+    "4": [
+        "FALSE",
+        "NEI"
+    ],
+    "5": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "6": [
+        "TRUE",
+        "CONTRADICT"
+    ],
+    "7": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "8": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "9": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "10": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "11": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "12": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "13": [
+        "TRUE",
+        "CONTRADICT"
+    ],
+    "14": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "15": [
+        "FALSE",
+        "NEI"
+    ],
+    "16": [
+        "TRUE",
+        "NEI"
+    ],
+    "17": [
+        "TRUE",
+        "NEI"
+    ],
+    "18": [
+        "TRUE",
+        "NEI"
+    ],
+    "19": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "20": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "21": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "22": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "23": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "24": [
+        "TRUE",
+        "NEI"
+    ],
+    "25": [
+        "TRUE",
+        "NEI"
+    ],
+    "26": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "27": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "28": [
+        "TRUE",
+        "NEI"
+    ],
+    "29": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "30": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "31": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "32": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "33": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "34": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "35": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "36": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "37": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "38": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "39": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "40": [
+        "TRUE",
+        "CONTRADICT"
+    ],
+    "41": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "42": [
+        "TRUE",
+        "NEI"
+    ],
+    "43": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "44": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "45": [
+        "FALSE",
+        "NEI"
+    ],
+    "46": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "47": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "48": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "49": [
+        "TRUE",
+        "CONTRADICT"
+    ],
+    "50": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "51": [
+        "TRUE",
+        "NEI"
+    ],
+    "52": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "53": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "54": [
+        "TRUE",
+        "NEI"
+    ],
+    "55": [
+        "TRUE",
+        "NEI"
+    ],
+    "56": [
+        "FALSE",
+        "SUPPORT"
+    ],
+    "57": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "58": [
+        "TRUE",
+        "CONTRADICT"
+    ],
+    "59": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "60": [
+        "TRUE",
+        "NEI"
+    ],
+    "61": [
+        "FALSE",
+        "NEI"
+    ],
+    "62": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "63": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "64": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "65": [
+        "FALSE",
+        "NEI"
+    ],
+    "66": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "67": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "68": [
+        "TRUE",
+        "NEI"
+    ],
+    "69": [
+        "TRUE",
+        "NEI"
+    ],
+    "70": [
+        "TRUE",
+        "NEI"
+    ],
+    "71": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "72": [
+        "TRUE",
+        "NEI"
+    ],
+    "73": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "74": [
+        "TRUE",
+        "CONTRADICT"
+    ],
+    "75": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "76": [
+        "TRUE",
+        "NEI"
+    ],
+    "77": [
+        "TRUE",
+        "NEI"
+    ],
+    "78": [
+        "TRUE",
+        "NEI"
+    ],
+    "79": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "80": [
+        "TRUE",
+        "NEI"
+    ],
+    "81": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "82": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "83": [
+        "TRUE",
+        "NEI"
+    ],
+    "84": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "85": [
+        "FALSE",
+        "NEI"
+    ],
+    "86": [
+        "TRUE",
+        "NEI"
+    ],
+    "87": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "88": [
+        "TRUE",
+        "NEI"
+    ],
+    "89": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "90": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "91": [
+        "TRUE",
+        "NEI"
+    ],
+    "92": [
+        "TRUE",
+        "NEI"
+    ],
+    "93": [
+        "TRUE",
+        "NEI"
+    ],
+    "94": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "95": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "96": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "97": [
+        "TRUE",
+        "NEI"
+    ],
+    "98": [
+        "TRUE",
+        "NEI"
+    ],
+    "99": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "100": [
+        "FALSE",
+        "NEI"
+    ],
+    "101": [
+        "TRUE",
+        "NEI"
+    ],
+    "102": [
+        "TRUE",
+        "NEI"
+    ],
+    "103": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "104": [
+        "TRUE",
+        "NEI"
+    ],
+    "105": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "106": [
+        "FALSE",
+        "NEI"
+    ],
+    "107": [
+        "FALSE",
+        "SUPPORT"
+    ],
+    "108": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "109": [
+        "TRUE",
+        "NEI"
+    ],
+    "110": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "111": [
+        "TRUE",
+        "CONTRADICT"
+    ],
+    "112": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "113": [
+        "TRUE",
+        "NEI"
+    ],
+    "114": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "115": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "116": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "117": [
+        "TRUE",
+        "NEI"
+    ],
+    "118": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "119": [
+        "FALSE",
+        "NEI"
+    ],
+    "120": [
+        "TRUE",
+        "NEI"
+    ],
+    "121": [
+        "TRUE",
+        "NEI"
+    ],
+    "122": [
+        "TRUE",
+        "NEI"
+    ],
+    "123": [
+        "FALSE",
+        "SUPPORT"
+    ],
+    "124": [
+        "FALSE",
+        "NEI"
+    ],
+    "125": [
+        "FALSE",
+        "NEI"
+    ],
+    "126": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "127": [
+        "FALSE",
+        "NEI"
+    ],
+    "128": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "129": [
+        "FALSE",
+        "SUPPORT"
+    ],
+    "130": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "131": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "132": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "133": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "134": [
+        "TRUE",
+        "NEI"
+    ],
+    "135": [
+        "TRUE",
+        "NEI"
+    ],
+    "136": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "137": [
+        "TRUE",
+        "NEI"
+    ],
+    "138": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "139": [
+        "TRUE",
+        "NEI"
+    ],
+    "140": [
+        "FALSE",
+        "NEI"
+    ],
+    "141": [
+        "TRUE",
+        "NEI"
+    ],
+    "142": [
+        "TRUE",
+        "NEI"
+    ],
+    "143": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "144": [
+        "FALSE",
+        "NEI"
+    ],
+    "145": [
+        "FALSE",
+        "NEI"
+    ],
+    "146": [
+        "TRUE",
+        "NEI"
+    ],
+    "147": [
+        "TRUE",
+        "CONTRADICT"
+    ],
+    "148": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "149": [
+        "TRUE",
+        "NEI"
+    ],
+    "150": [
+        "TRUE",
+        "NEI"
+    ],
+    "151": [
+        "TRUE",
+        "NEI"
+    ],
+    "152": [
+        "TRUE",
+        "NEI"
+    ],
+    "153": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "154": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "155": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "156": [
+        "FALSE",
+        "NEI"
+    ],
+    "157": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "158": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "159": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "160": [
+        "TRUE",
+        "CONTRADICT"
+    ],
+    "161": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "162": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "163": [
+        "TRUE",
+        "CONTRADICT"
+    ],
+    "164": [
+        "TRUE",
+        "NEI"
+    ],
+    "165": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "166": [
+        "TRUE",
+        "NEI"
+    ],
+    "167": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "168": [
+        "TRUE",
+        "NEI"
+    ],
+    "169": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "170": [
+        "FALSE",
+        "NEI"
+    ],
+    "171": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "172": [
+        "TRUE",
+        "NEI"
+    ],
+    "173": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "174": [
+        "FALSE",
+        "SUPPORT"
+    ],
+    "175": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "176": [
+        "TRUE",
+        "NEI"
+    ],
+    "177": [
+        "TRUE",
+        "NEI"
+    ],
+    "178": [
+        "TRUE",
+        "NEI"
+    ],
+    "179": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "180": [
+        "TRUE",
+        "NEI"
+    ],
+    "181": [
+        "TRUE",
+        "NEI"
+    ],
+    "182": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "183": [
+        "TRUE",
+        "NEI"
+    ],
+    "184": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "185": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "186": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "187": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "188": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "189": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "190": [
+        "TRUE",
+        "NEI"
+    ],
+    "191": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "192": [
+        "TRUE",
+        "CONTRADICT"
+    ],
+    "193": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "194": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "195": [
+        "TRUE",
+        "NEI"
+    ],
+    "196": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "197": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "198": [
+        "TRUE",
+        "NEI"
+    ],
+    "199": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "200": [
+        "TRUE",
+        "NEI"
+    ],
+    "201": [
+        "TRUE",
+        "NEI"
+    ],
+    "202": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "203": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "204": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "205": [
+        "TRUE",
+        "NEI"
+    ],
+    "206": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "207": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "208": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "209": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "210": [
+        "TRUE",
+        "NEI"
+    ],
+    "211": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "212": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "213": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "214": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "215": [
+        "TRUE",
+        "NEI"
+    ],
+    "216": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "217": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "218": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "219": [
+        "FALSE",
+        "SUPPORT"
+    ],
+    "220": [
+        "TRUE",
+        "CONTRADICT"
+    ],
+    "221": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "222": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "223": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "224": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "225": [
+        "TRUE",
+        "CONTRADICT"
+    ],
+    "226": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "227": [
+        "TRUE",
+        "NEI"
+    ],
+    "228": [
+        "FALSE",
+        "NEI"
+    ],
+    "229": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "230": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "231": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "232": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "233": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "234": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "235": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "236": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "237": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "238": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "239": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "240": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "241": [
+        "TRUE",
+        "NEI"
+    ],
+    "242": [
+        "TRUE",
+        "NEI"
+    ],
+    "243": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "244": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "245": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "246": [
+        "TRUE",
+        "NEI"
+    ],
+    "247": [
+        "TRUE",
+        "NEI"
+    ],
+    "248": [
+        "FALSE",
+        "NEI"
+    ],
+    "249": [
+        "FALSE",
+        "NEI"
+    ],
+    "250": [
+        "FALSE",
+        "NEI"
+    ],
+    "251": [
+        "TRUE",
+        "NEI"
+    ],
+    "252": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "253": [
+        "TRUE",
+        "NEI"
+    ],
+    "254": [
+        "TRUE",
+        "NEI"
+    ],
+    "255": [
+        "TRUE",
+        "NEI"
+    ],
+    "256": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "257": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "258": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "259": [
+        "TRUE",
+        "NEI"
+    ],
+    "260": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "261": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "262": [
+        "FALSE",
+        "NEI"
+    ],
+    "263": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "264": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "265": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "266": [
+        "TRUE",
+        "CONTRADICT"
+    ],
+    "267": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "268": [
+        "TRUE",
+        "NEI"
+    ],
+    "269": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "270": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "271": [
+        "FALSE",
+        "NEI"
+    ],
+    "272": [
+        "TRUE",
+        "NEI"
+    ],
+    "273": [
+        "TRUE",
+        "NEI"
+    ],
+    "274": [
+        "TRUE",
+        "NEI"
+    ],
+    "275": [
+        "FALSE",
+        "NEI"
+    ],
+    "276": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "277": [
+        "TRUE",
+        "NEI"
+    ],
+    "278": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "279": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "280": [
+        "TRUE",
+        "NEI"
+    ],
+    "281": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "282": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "283": [
+        "TRUE",
+        "NEI"
+    ],
+    "284": [
+        "FALSE",
+        "SUPPORT"
+    ],
+    "285": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "286": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "287": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "288": [
+        "TRUE",
+        "NEI"
+    ],
+    "289": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "290": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "291": [
+        "TRUE",
+        "NEI"
+    ],
+    "292": [
+        "TRUE",
+        "NEI"
+    ],
+    "293": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "294": [
+        "FALSE",
+        "CONTRADICT"
+    ],
+    "295": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "296": [
+        "TRUE",
+        "CONTRADICT"
+    ],
+    "297": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "298": [
+        "TRUE",
+        "SUPPORT"
+    ],
+    "299": [
+        "TRUE",
+        "NEI"
+    ]
+}

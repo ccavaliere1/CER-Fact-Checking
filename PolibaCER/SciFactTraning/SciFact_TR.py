@@ -1,5 +1,4 @@
-﻿import random
-from pathlib import Path
+﻿from pathlib import Path
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics import classification_report
 from PolibaCER.DataLoader.DataLoader import build_scifact_index, save_prediction_to_json
@@ -19,9 +18,9 @@ DATA_PATH = BASE_PATH / "data" / "SciFact"
 RETRIVER_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
 model_dir = BASE_PATH / "models" / "cer-deberta-v3-large-scifact"
 TRAINED_CLASSIFIER_MODEL, tokenizer, device = load_finetuned_model(model_dir)
-result_path = (Path(__file__).resolve().parents[1] / "DataLoader" / "TR_GEMINI3-5_flash_lite.json")
+result_path = (Path(__file__).resolve().parents[1] / "DataLoader" / "TR_GEM3-5_CLJ.json")
 CLAIMS_NUMBER = 100
-LOCAL = True
+LOCAL = False
 NVIDIA = False
 
 
@@ -56,10 +55,7 @@ def get_claim_records(data_path, limit, random_selection=False):
     with claims_path.open("r", encoding="utf-8") as file:
         data = [json.loads(line) for line in file]
 
-    # if random_selection:
-    #     data = random.sample(data, k=min(limit, len(data)))
-    # else:
-        #data = data[:limit]
+    data = data[:limit]
 
     records = []
 
