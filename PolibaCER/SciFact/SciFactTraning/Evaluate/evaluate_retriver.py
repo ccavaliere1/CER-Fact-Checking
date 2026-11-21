@@ -1,7 +1,7 @@
 ﻿import json
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
-from PolibaCER.DataLoader.DataLoader import build_scifact_index
+from PolibaCER.SciFact.DataLoader.DataLoader import build_scifact_index
 from PolibaCER.FactCheck.Retriver import retrieve_scifact_top_abstracts
 
 

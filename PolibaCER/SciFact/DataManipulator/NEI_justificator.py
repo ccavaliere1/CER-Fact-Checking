@@ -13,7 +13,7 @@ BASE_PATH = Path(__file__).resolve().parents[1]
 DATA_PATH = BASE_PATH / "data" / "SciFact"
 RETRIVER_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
 CLAIMS_NUMBER = 809
-LOCAL = False
+LOCAL = True
 NVIDIA = False
 
 

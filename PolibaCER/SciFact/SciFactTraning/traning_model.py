@@ -15,7 +15,7 @@ from transformers import (
     AutoTokenizer,
     get_linear_schedule_with_warmup,
 )
-from PolibaCER.DataLoader.DataLoader import build_scifact_index
+from PolibaCER.SciFact.DataLoader.DataLoader import build_scifact_index
 from PolibaCER.FactCheck.Retriver import retrieve_scifact_top_abstracts
 from collections import Counter
 

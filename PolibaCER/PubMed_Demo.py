@@ -2,7 +2,7 @@
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 from transformers import pipeline
-from PolibaCER.DataLoader.DataLoader import load_pubmed_embeddings
+from PolibaCER.SciFact.DataLoader.DataLoader import load_pubmed_embeddings
 from PolibaCER.FactCheck.Retriver import retrieve_pubmed_top_abstracts
 from PolibaCER.FactCheck.Reasoning import reason_model_response_LOCAL, reason_model_response_GEMINI
 from PolibaCER.FactCheck.Justifyer import parse_response, generate_justification

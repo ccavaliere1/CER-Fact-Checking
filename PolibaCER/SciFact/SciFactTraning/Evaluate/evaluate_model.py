@@ -1,26 +1,25 @@
-﻿from pathlib import Path
+﻿import random
+from pathlib import Path
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics import classification_report
-from PolibaCER.DataLoader.DataLoader import build_scifact_index, save_prediction_to_json
+from transformers import pipeline
+from PolibaCER.SciFact.DataLoader.DataLoader import build_scifact_index, save_prediction_to_json
 from PolibaCER.FactCheck.Retriver import retrieve_scifact_top_abstracts
 from PolibaCER.FactCheck.Reasoning import reason_model_response_LOCAL, reason_model_response_GEMINI
 from PolibaCER.FactCheck.Justifyer import parse_response
 from PolibaCER.FactCheck.Response import normalize_abstract_sentences
 from openai import OpenAI
 import json
-from PolibaCER.SciFactTraning.traning_model import load_finetuned_model, predict
 import os
 
 
 # -------------------------------------------- GLOBAL VARIABLES ------------------------------------------- #
-BASE_PATH = Path(__file__).resolve().parents[1]
-DATA_PATH = BASE_PATH / "data" / "SciFact"
+DATA_PATH = Path(__file__).resolve().parent / "data" / "SciFact"
 RETRIVER_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
-model_dir = BASE_PATH / "models" / "cer-deberta-v3-large-scifact"
-TRAINED_CLASSIFIER_MODEL, tokenizer, device = load_finetuned_model(model_dir)
-result_path = (Path(__file__).resolve().parents[1] / "DataLoader" / "TR_GEM3-5_CLJ.json")
-CLAIMS_NUMBER = 100
-LOCAL = False
+ZEROSHOT_CLASSIFIER_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33"
+result_path = Path(__file__).resolve().parent / "Evaluate" / "model_evaluation_results.json"
+CLAIMS_NUMBER = 30
+LOCAL = True
 NVIDIA = False
 
 
@@ -44,47 +43,34 @@ else:
         # LLM_MODEL = "gemma-4-26b-a4b-it"
         # LLM_MODEL = "gemma-4-31b-it"
         LLM_MODEL = "gemini-3.5-flash-lite"
-        #LLM_MODEL = "gemini-4-hydrogen"
         print("REMOTE LLM: GOOGLE GEMINI API - {} model".format(LLM_MODEL))
 
 # -------------------------------------------- DATA SETUP ------------------------------------------- #
+def get_claim_and_labels(data_path, limit, random_selection=False):
+    CLAIMS_DEV_PATH = data_path / "claims_test.jsonl"
 
-def get_claim_records(data_path, limit, random_selection=False):
-    claims_path = data_path / "claims_test.jsonl"
-
-    with claims_path.open("r", encoding="utf-8") as file:
+    with CLAIMS_DEV_PATH.open("r", encoding="utf-8") as file:
         data = [json.loads(line) for line in file]
 
-    data = data[:limit]
+    if random_selection:
+        selected_data = random.sample(data, k=min(limit, len(data)))
+    else:
+        selected_data = data[:limit]
 
-    records = []
+    claims = []
+    labels = []
 
-    for item in data:
-        evidence = item.get("evidence") or {}
+    for item in selected_data:
+        claims.append(item["claim"])
 
-        if not evidence:
-            label = "NEI"
+        if item["evidence"] not in [None, {}]:
+            for doc_id, evidence_list in item["evidence"].items():
+                for evidence in evidence_list:
+                    labels.append(evidence["label"])
         else:
-            labels = {
-                annotation["label"].upper()
-                for annotations in evidence.values()
-                for annotation in annotations
-            }
+            labels.append("NEI")
 
-            if len(labels) != 1:
-                raise ValueError(
-                    f"Label multiple per claim {item['id']}: {labels}"
-                )
-
-            label = labels.pop()
-
-        records.append({
-            "id": item["id"],
-            "claim": item["claim"],
-            "true_label": label,
-        })
-
-    return records
+    return claims, labels
 
 def calculate_metrics(results):
     labels_order = ["SUPPORT", "CONTRADICT", "NEI"]
@@ -142,20 +128,20 @@ if __name__ == "__main__":
 
 
     # ------------------------------------------- CLAIM INPUT ------------------------------------------- #
-    records = get_claim_records(DATA_PATH, CLAIMS_NUMBER)
+    claims, labels = get_claim_and_labels(DATA_PATH, CLAIMS_NUMBER)
 
     results={}
 
-    for record_index, record in enumerate(records):
+    for claim in claims:
 
         # ------------------------------------------- RETRIEVE TOP ABSTRACTS ------------------------------------------- #
         top_abstracts = retrieve_scifact_top_abstracts(
-            claim=record["claim"],
+            claim=claim,
             model=RETRIVER_MODEL,
             index=index,
             doc_ids=doc_ids,
             documents=documents,
-            top_k=4
+            top_k=20
         )
 
         # IMPOSTAZIONE VALORI GLOBALI PER GLI ABSTRACTS
@@ -168,66 +154,35 @@ if __name__ == "__main__":
 
         # ------------------------------------------- PROCESSING OF THE TOP ABSTRACTS -------------------------------------------#
         if NVIDIA or LOCAL:
-            answer = reason_model_response_LOCAL(globals(), record["claim"], top_abstracts, client, LLM_MODEL)
+            answer = reason_model_response_LOCAL(globals(), claim, top_abstracts, client, LLM_MODEL)
         else:
-            answer = reason_model_response_GEMINI(globals(), record["claim"], top_abstracts, LLM_MODEL)
+            answer = reason_model_response_GEMINI(globals(), claim, top_abstracts, LLM_MODEL)
 
         # ------------------------------------------- JUSTIFICATION GENERATION ------------------------------------------- #
+        zeroshot_classifier = pipeline(
+            "zero-shot-classification", model=ZEROSHOT_CLASSIFIER_MODEL
+        )
 
         first_label, justification, supporting, refusing, notes = parse_response(answer)
 
-        # LA FUNZIONE PREDICT EQUIVALE ALLA "generate_justification" del ZEROSHOOT RETRIVER_MODEL
-        # Generate the justification text
-        justification_text = (
-            f'Justification: "{justification}"'
-        )
-
-        # Limit the justification text to a maximum length
-        max_length = 512
-        if len(justification_text) > max_length:
-            justification_text = justification_text[:max_length]
-            print(f"Justification text truncated to {max_length} characters.")
-
-        result = predict(
-            model=TRAINED_CLASSIFIER_MODEL,
-            tokenizer=tokenizer,
-            claim=record["claim"],
-            justification=justification_text,
-            device=device,
-        )
-
-        # ----------------------------------------- CREATE FINAL RESPONSE ----------------------------------------- #
-        probabilities = result["probabilities"]
-
-        predicted_label, confidence = max(
-            probabilities.items(),
-            key=lambda item: item[1],
-        )
+        # VIENE TAGLIATA LA PARTE DEL CLASSIFICATORE E LO SI FA UN CONTROLLO SOLO SUL LABEL INIZIALE PREDELLO DAL MODELLO
 
         if not LOCAL:  # BISOGNA EFFETTUARE UN ULTERIORE PULIZIA DEI SUPPORTING E REFUSING PERCHÉ IL MODELLO GEMMA NON RESTITUISCE SEMPRE LE FRASI IN MODO PULITO
             supporting = normalize_abstract_sentences(supporting)
             refusing = normalize_abstract_sentences(refusing)
 
-
-        results[record["claim"]] = {
-            "predicted_label": predicted_label,
-            "true_label": record["true_label"],
-            "confidence": confidence,
+        results[claim] = {
+            "predicted_label": first_label,
+            "true_label": labels[claims.index(claim)],
         }
 
         # ----------------------------------------- SAVE PREDICTION TO JSON ----------------------------------------- #
         save_prediction_to_json(
-            id=record_index,
-            predicted_label=predicted_label,
-            true_label=record["true_label"],
+            id=claims.index(claim),
+            predicted_label=first_label,
+            true_label=labels[claims.index(claim)],
             output_file=result_path
         )
-
-    for claim, prediction in results.items():
-        print(f"Claim: {claim}")
-        print(f"Predicted Label: {prediction['predicted_label']} Confidence: {prediction['confidence']} ---> Real Label: {prediction['true_label']}")
-        print("-" * 20)
-
 
     # ------------------------------------------- CONFUSION MATRIX ------------------------------------------- #
 

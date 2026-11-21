@@ -3,7 +3,7 @@ from pathlib import Path
 import torch
 from sklearn.metrics import classification_report, confusion_matrix
 from transformers import pipeline
-from PolibaCER.SciFactTraning.traning_model import load_finetuned_model, predict
+from PolibaCER.SciFact.SciFactTraning.traning_model import load_finetuned_model, predict
 
 MODEL_NAME = "MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33"
 LABELS = ["SUPPORT", "CONTRADICT", "NEI"]

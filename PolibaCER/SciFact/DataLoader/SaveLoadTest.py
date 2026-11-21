@@ -1,6 +1,6 @@
 ﻿from sklearn.metrics import classification_report
 
-from PolibaCER.DataLoader.DataLoader import save_prediction_to_json, load_predictions_from_json
+from PolibaCER.SciFact.DataLoader.DataLoader import load_predictions_from_json
 
 def calculate_metrics(results):
     labels_order = ["SUPPORT", "CONTRADICT", "NEI"]

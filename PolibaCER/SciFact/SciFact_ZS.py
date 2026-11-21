@@ -1,9 +1,8 @@
-﻿import random
-from pathlib import Path
+﻿from pathlib import Path
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics import classification_report
 from transformers import pipeline
-from PolibaCER.DataLoader.DataLoader import build_scifact_index, save_prediction_to_json
+from PolibaCER.SciFact.DataLoader.DataLoader import build_scifact_index, save_prediction_to_json
 from PolibaCER.FactCheck.Retriver import retrieve_scifact_top_abstracts
 from PolibaCER.FactCheck.Reasoning import reason_model_response_LOCAL, reason_model_response_GEMINI
 from PolibaCER.FactCheck.Justifyer import parse_response, generate_justification
