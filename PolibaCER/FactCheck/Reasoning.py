@@ -22,7 +22,7 @@ def llm_reasoning_template(query):
     
     Be strict about using only the information provided in the Context from the scientific papers.
 
-    Answer describing in a scentific way. Be formal during the answer. Use the third person.
+    Answer describing in a scientific way. Be formal during the answer. Use the third person.
 
     Answer without mentioning the Context. Use it but don't refer to it in the text.
 

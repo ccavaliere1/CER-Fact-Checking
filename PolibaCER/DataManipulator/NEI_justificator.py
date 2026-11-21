@@ -1,4 +1,5 @@
 ﻿from pathlib import Path
+from typing import Any
 from huggingface_hub.utils import tqdm
 from sentence_transformers import SentenceTransformer
 from PolibaCER.FactCheck.GoogleAPI import gemini_generate
@@ -11,8 +12,8 @@ import os
 BASE_PATH = Path(__file__).resolve().parents[1]
 DATA_PATH = BASE_PATH / "data" / "SciFact"
 RETRIVER_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
-CLAIMS_NUMBER = 304
-LOCAL = True
+CLAIMS_NUMBER = 809
+LOCAL = False
 NVIDIA = False
 
 
@@ -26,7 +27,7 @@ if LOCAL:
     )
 else:
     if NVIDIA:
-        LLM_MODEL = "google/diffusiongemma-26b-a4b-it"  # funziona ma senza giustificazioni
+        LLM_MODEL = "mistralai/mistral-large-4-1t-a52b"
 
         client = OpenAI(
             base_url="https://integrate.api.nvidia.com/v1",
@@ -81,30 +82,85 @@ def get_abstracts_for_claims(claims_path, limit):
     corpus_path = DATA_PATH / "corpus.jsonl"
 
     with claims_path.open("r", encoding="utf-8") as file:
-        data = [json.loads(line) for line in file]
+        data = [json.loads(line) for line in file][:limit]
 
     with corpus_path.open("r", encoding="utf-8") as file:
-        corpus = [json.loads(line) for line in file]
-
-    data = data[:limit]
+        corpus = {
+            str(document["doc_id"]): document
+            for line in file
+            if (document := json.loads(line))
+        }
 
     abstracts = {}
 
     for item in data:
-        cited_doc_ids = item.get("cited_doc_ids") or {}
-        abstracts[item["id"]] = []
+        evidence = item.get("evidence") or {}
+        claim_abstracts = []
 
-        if not cited_doc_ids:
-            abstracts[item["id"]].append("")
+        labels = {
+            annotation.get("label", "").upper()
+            for annotations in evidence.values()
+            for annotation in annotations
+        }
+
+        if labels - {"SUPPORT", "CONTRADICT"}:
+            raise ValueError(
+                f"Label non valida per il claim {item['id']}: {labels}"
+            )
+
+        if labels:
+            # SUPPORT/CONTRADICT: solo le frasi indicate nelle evidence.
+            claim_abstracts.append(evidence_to_text(evidence, corpus))
         else:
-            for doc_id in cited_doc_ids:
-                doc = next((d for d in corpus if d["doc_id"] == doc_id), None)
-                if doc:
-                    abstracts[item["id"]].append(doc.get("abstract", ""))
-                else:
-                    abstracts[item["id"]].append("")
+            # NEI: intero abstract dei documenti citati.
+            for doc_id in item.get("cited_doc_ids") or []:
+                document = corpus.get(str(doc_id))
+                if document is None:
+                    raise KeyError(
+                        f"Documento {doc_id} non presente nel corpus SciFact."
+                    )
+
+                claim_abstracts.append(
+                    " ".join(document.get("abstract") or [])
+                )
+
+        abstracts[item["id"]] = claim_abstracts
 
     return abstracts
+
+
+def evidence_to_text(
+    evidence: dict[str, list[dict[str, Any]]],
+    corpus: dict[str, dict[str, Any]],
+) -> str:
+    sentences = []
+
+    for doc_id, annotations in evidence.items():
+        document = corpus.get(str(doc_id))
+
+        if document is None:
+            raise KeyError(
+                f"Documento {doc_id} non presente nel corpus SciFact."
+            )
+
+        abstract = document.get("abstract") or []
+
+        for annotation in annotations:
+            for sentence_id in annotation.get("sentences", []):
+                if not isinstance(sentence_id, int):
+                    raise TypeError(
+                        f"Indice frase non valido: {sentence_id}"
+                    )
+
+                if sentence_id < 0 or sentence_id >= len(abstract):
+                    raise IndexError(
+                        f"Frase {sentence_id} non valida "
+                        f"per il documento {doc_id}."
+                    )
+
+                sentences.append(abstract[sentence_id])
+
+    return " ".join(sentences)
 
 # -------------------------------------------- SALVARE LA GIUSTIFICAZIONE ------------------------------------------- #
 def save_justifications(input_path: Path, output_path: Path, justifications: dict[int, str]) -> None:
@@ -146,7 +202,7 @@ def save_justifications(input_path: Path, output_path: Path, justifications: dic
             )
 
 
-def llm_reasoning_template(query):
+def llm_reasoning_template(query, label=None):
     """
     Generate a template for the prompt used for justification generation by the LLM model.
 
@@ -156,10 +212,28 @@ def llm_reasoning_template(query):
     Returns:
         str: Reasoning template for the claim.
     """
-    llm_nei_factual_prompt = """<<SYS>> [INST]
+    prompt_nei = f"""<<SYS>> [INST]
 
-        You are a precise biomedical evidence extraction assistant.
-        Given a claim and scientific abstracts (where the topic or claim may be cited or mentioned), your task is to extract verbatim sentences from the abstracts that are most relevant to the claim or show the scope/limits of what the abstracts actually report (helping explain why the claim cannot be confirmed or refuted).
+        You are a helpful, respectful and honest Doctor. Always answer as helpfully as possible using the context text provided.
+
+        Use the information in Context.
+    
+        Elaborate the Context to generate a new information.
+    
+        Use only the knowledge in Context to answer.
+        
+        Be strict about using only the information provided in the Context from the scientific papers.
+    
+        Answer describing in a scientific way. Be formal during the answer. Use the third person.
+    
+        Answer without mentioning the Context. Use it but don't refer to it in the text.
+    
+        To answer, use max 300 word.
+    
+        Create a Justification from the sentences given.
+        Given a claim and scientific abstracts (where the topic or claim may be cited or mentioned).
+        Your task is to extract verbatim sentences from the abstracts that are most relevant to the claim or show the scope/limits of what the abstracts actually report.
+        (helping explain why the claim cannot be confirmed or refuted)
         
         Strict Rules:
         - Copy sentences STRICTLY VERBATIM (character-for-character / word-for-word) from the provided abstracts.
@@ -167,26 +241,112 @@ def llm_reasoning_template(query):
         - DO NOT invent sentences that are not explicitly present in the abstracts.
         - Only include sentences that actually appear in the text. If no sentence in an abstract is relevant or useful, write the absence of relevant information.
         - Do not add explanations outside the requested sections.
-        - Keep the output format strictly as specified below (max 2 sentences)
+        - Keep the output format strictly as specified below
         
         Output format:
         <exact verbatim sentence>
         
-        (or write the absence of relevant information if no suitable sentence exists)
+        (or write a sentence of minimal length explaining the absence of relevant information for the claim, if no sentence in the abstracts is relevant or useful. Use the claim to guide the explanation, but do not invent information.)
         
         [/INST] <</SYS>>
         
-        [INST] Claim: {claim} [/INST]
+        [INST] Claim: {query} [/INST]
         [INST] Abstracts:
         """
-    return llm_nei_factual_prompt
+
+    prompt_true = f"""<<SYS>> [INST]
+
+            You are a helpful, respectful and honest Doctor. Always answer as helpfully as possible using the context text provided.
+
+            Use the information in Context.
+
+            Elaborate the Context to generate a new information.
+
+            Use only the knowledge in Context to answer.
+
+            Be strict about using only the information provided in the Context from the scientific papers.
+
+            Answer describing in a scientific way. Be formal during the answer. Use the third person.
+
+            Answer without mentioning the Context. Use it but don't refer to it in the text.
+
+            To answer, use max 300 word.
+
+            Create a Justification from the sentences given.
+            Given a claim and scientific abstracts.
+            Your task is to use the information in the evidence to generate a justification that exclusively supports the claim.
+            (helping explain why the claim can be confirmed)
+
+            Strict Rules:
+                - DO NOT invent data that are not explicitly present in the evidence.
+                - Don not exactly copy the evidence
+                - Strictly stay within the information provided by the evidence.
+                - Do not add explanations outside the requested sections.
+                - Keep the output format strictly as specified below
+
+            Output format:
+            <exact verbatim sentence>
+
+            [/INST] <</SYS>>
+
+            [INST] Claim: {query} [/INST]
+            [INST] Evidence from scientific abstracts:
+            """
+
+    prompt_false = f"""<<SYS>> [INST]
+
+                You are a helpful, respectful and honest Doctor. Always answer as helpfully as possible using the context text provided.
+
+                Use the information in Context.
+
+                Elaborate the Context to generate a new information.
+
+                Use only the knowledge in Context to answer.
+
+                Be strict about using only the information provided in the Context from the scientific papers.
+
+                Answer describing in a scientific way. Be formal during the answer. Use the third person.
+
+                Answer without mentioning the Context. Use it but don't refer to it in the text.
+
+                To answer, use max 300 word.
+
+                Create a Justification from the sentences given.
+                Given a claim and scientific abstracts.
+                Your task is to use the information in the evidence to generate a justification that exclusively refutes the claim.
+                (helping explain why the claim can be rejected)
+
+                Strict Rules:
+                    - DO NOT invent data that are not explicitly present in the evidence.
+                    - Don not exactly copy the evidence
+                    - Strictly stay within the information provided by the evidence.
+                    - Do not add explanations outside the requested sections.
+                    - Keep the output format strictly as specified below
+
+                Output format:
+                <exact verbatim sentence>
+
+                [/INST] <</SYS>>
+
+                [INST] Claim: {query} [/INST]
+                [INST] Evidence from scientific abstracts:
+                """
+
+    if label == "SUPPORT":
+        llm_prompt_template = prompt_true
+    elif label == "CONTRADICT":
+        llm_prompt_template = prompt_false
+    else:
+        llm_prompt_template = prompt_nei
+
+    return llm_prompt_template
 
 
 
 # -------------------------------------------- MAIN FUNCTION ------------------------------------------- #
 if __name__ == "__main__":
 
-    claims_path = DATA_PATH / "claims_train_nei.jsonl"
+    claims_path = DATA_PATH / "claims_train.jsonl"
 
     # ------------------------------------------- CLAIM INPUT ------------------------------------------- #
     records = get_claim_records(claims_path, CLAIMS_NUMBER)
@@ -203,7 +363,7 @@ if __name__ == "__main__":
 
         # ------------------------------------------- PROCESSING OF THE TOP ABSTRACTS -------------------------------------------#
         if NVIDIA or LOCAL:
-            prompt_template = llm_reasoning_template(record["claim"])
+            prompt_template = llm_reasoning_template(record["claim"], record["true_label"])
 
             for i, abstract in enumerate(abstracts[record["id"]], start=1):
                 prompt_template += f"{abstract} ; "
@@ -230,9 +390,9 @@ if __name__ == "__main__":
             prompt_template = llm_reasoning_template(record["claim"])
 
             # Add the abstracts to the prompt
-            for i in range(1, len(top_abstracts)):
-                prompt_template += f"{globals()[f'abstract_{i}']} ; "
-            prompt_template += f"{globals()[f'abstract_{i + 1}']} [/INST]"
+            for i, abstract in enumerate(abstracts[record["id"]], start=1):
+                prompt_template += f"{abstract} ; "
+            prompt_template += "[/INST]"
 
             answer = gemini_generate(prompt_template, model=LLM_MODEL)
 
@@ -242,7 +402,7 @@ if __name__ == "__main__":
 
     # ------------------------------------------- SAVE JUSTIFICATIONS ------------------------------------------- #
     save_justifications(
-        input_path=DATA_PATH / "claims_train_nei.jsonl",
-        output_path=DATA_PATH / "claims_train_justifications_processed.jsonl",
+        input_path=DATA_PATH / "claims_train.jsonl",
+        output_path=DATA_PATH / "claims_train_all_justified.jsonl",
         justifications=justifications,
     )

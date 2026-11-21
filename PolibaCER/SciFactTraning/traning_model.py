@@ -113,7 +113,7 @@ def load_scifact_examples(claims_path: Path, corpus_path: Path) -> list[dict[str
                 {
                     "id": item["id"],
                     "claim": item["claim"],
-                    "evidence": evidence_to_text(evidence, corpus)
+                    "evidence": evidence_to_text(evidence, corpus) + " " + item.get("justification", STANDARD_JUSTIFICATION)
                     if evidence
                     else item.get("justification", STANDARD_JUSTIFICATION),
                     "label": get_label(item),
@@ -205,27 +205,29 @@ def build_retrieved_validation_examples(examples: list[dict[str, Any]], retrieve
     retrieved_examples = []
 
     for example in examples:
-        if example["label"] == "NEI":
-            evidence = "No evidence available. Not enough information to evaluate this claim."
-        else:
-            retrieved = retrieve_scifact_top_abstracts(
-                claim=example["claim"],
-                model=retriever_model,
-                index=index,
-                doc_ids=doc_ids,
-                documents=documents,
-                top_k=top_k,
-            )
+        # if example["label"] == "NEI":
+        #     evidence = "No evidence available. Not enough information to evaluate this claim."
+        # else:
+        retrieved = retrieve_scifact_top_abstracts(
+            claim=example["claim"],
+            model=retriever_model,
+            index=index,
+            doc_ids=doc_ids,
+            documents=documents,
+            top_k=top_k,
+        )
 
-            evidence = "\n".join(
-                result["abstract"]
-                for result in retrieved
-            )
+        evidence = "\n".join(
+            result["abstract"]
+            for result in retrieved
+        )
+        # --- else end ----
 
         retrieved_examples.append({
             **example,
             "evidence": evidence,
         })
+
 
     return retrieved_examples
 
@@ -465,8 +467,8 @@ def train(train_examples: list[dict[str, Any]], output_dir: Path, config: TrainC
 def main() -> None:
     config = TrainConfig(
         model_name="microsoft/deberta-v3-large",
-        epochs=4,
-        batch_size=2,
+        epochs=8,
+        batch_size=4,
         warmup_ratio=0.1,
         weight_decay=0.01,
         learning_rate=1e-5,
@@ -476,7 +478,7 @@ def main() -> None:
 
 
     train_examples = load_scifact_examples(
-        Path(__file__).resolve().parents[1]/"data"/"SciFact" / "claims_train_justifications_evidence.jsonl",
+        Path(__file__).resolve().parents[1]/"data"/"SciFact" / "claims_train_all_justified.jsonl",
         Path(__file__).resolve().parents[1]/"data"/"SciFact" / "corpus.jsonl",
     )
 
