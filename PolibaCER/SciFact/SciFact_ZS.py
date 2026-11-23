@@ -22,7 +22,8 @@ LOCAL = True
 NVIDIA = False
 
 
-# -------------------------------------------- LLM RETRIVER_MODEL SETUP ------------------------------------------- #
+
+# -------------------------------------------- LLM LLM_MODEL SETUP ------------------------------------------- #
 if LOCAL:
     LLM_MODEL = "bartowski/Qwen2.5-7B-Instruct-GGUF:Q6_K"
 
