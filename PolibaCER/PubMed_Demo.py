@@ -20,7 +20,7 @@ DATA_PATH = PROJECT_ROOT / "data"
 embeddings_file = str(DATA_PATH) + "\\abstract_embeddings.npy"
 pmid_file = str(DATA_PATH) + "\\pmids.npy"
 faiss_index_file = str(DATA_PATH) + "\\faiss_index.index"
-file_path = str(DATA_PATH) + "\\parte_205.csv"
+file_path = str(DATA_PATH) + "\\PubMed_p205.csv"
 
 RETRIVER_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
 ZEROSHOT_CLASSIFIER_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v1.1-all-33"

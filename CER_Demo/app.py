@@ -103,7 +103,7 @@ else:
 embeddings_file = r"data\abstract_embeddings.npy"
 pmid_file = r"data\pmids.npy"
 faiss_index_file = r"data\faiss_index.index"
-file_path = r'data\parte_205.csv'
+file_path = r'../PolibaCER/BioASQ/data/PubMed_p205.csv'
 
 
 # Load data
