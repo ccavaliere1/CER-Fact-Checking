@@ -211,7 +211,7 @@ def main() -> None:
     #
     # count = extract_failed_justifications(
     #     input_path=data_dir / "claims_train_nei_mj50.jsonl",
-    #     output_path=data_dir / "claims_train_failed_justifications.jsonl",
+    #     index_output_path=data_dir / "claims_train_failed_justifications.jsonl",
     # )
     # print(f"Record estratti: {count}")
 
@@ -226,7 +226,7 @@ def main() -> None:
     # replaced, added = merge_justifications(
     #     first_path=data_dir / "+304-50.jsonl",
     #     second_path=data_dir / "+50.jsonl",
-    #     output_path=data_dir / "304_merged_justifications.jsonl",
+    #     index_output_path=data_dir / "304_merged_justifications.jsonl",
     # )
 
     # print(f"Justification sostituite: {replaced}")

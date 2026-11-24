@@ -1,4 +1,5 @@
 ﻿import pickle
+from pathlib import Path
 import torch
 from nltk.tokenize import sent_tokenize
 from sentence_transformers import SentenceTransformer, util
@@ -6,21 +7,27 @@ import pandas as pd
 import numpy as np
 import nltk
 
+from PolibaCER.BioASQ.DataCreator.DatasetMaker import get_bioasq_data
+from PolibaCER.BioASQ.FactCheck.BM25 import seach_bm25
 
-nltk.download('punkt')
+# nltk.download('punkt')
 
-
+DATA_PATH = Path(__file__).resolve().parents[1] / "data"
 start_idx = 0  # start
 end_idx = 1048  # end
 
 
-with open('/content/drive/MyDrive/pickled_sr', 'rb') as file:
+with open(DATA_PATH / "PubMed_BM25Okapi.pkl", 'rb') as file:
     inverted_index = pickle.load(file)
 
 
-df = pd.read_csv("/content/drive/MyDrive/healthFC_annotated.csv")
-claims = df.en_claim.tolist()
-labels = df.label.tolist()
+# df = pd.read_csv(".csv")
+# claims = df.en_claim.tolist()
+# labels = df.label.tolist()
+
+bioasq_data = get_bioasq_data()
+claims = bioasq_data["questions"]
+labels = bioasq_data["answers"]
 
 
 query_list = []
@@ -29,10 +36,12 @@ for idx, claim in enumerate(claims[start_idx:end_idx]):
     query_list.append({"id": str(idx + start_idx), "text": claim})
 
 
-results = inverted_index.msearch(
-  queries=query_list,
-  cutoff=20,
-)
+# results = inverted_index.msearch(
+#   queries=query_list,
+#   cutoff=20,
+# )
+
+results = seach_bm25(inverted_index, query_list, top_k=20)
 
 # Carica il file CSV degli abstract
 abstracts = pd.read_csv("/content/drive/MyDrive/abstract_merged.csv")
