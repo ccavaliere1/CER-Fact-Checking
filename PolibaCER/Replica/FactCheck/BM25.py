@@ -14,7 +14,7 @@ from nltk.stem import SnowballStemmer
 from rank_bm25 import BM25Okapi
 
 DATA_PATH = Path(__file__).resolve().parents[1] / "data"
-corpus_path = DATA_PATH / "PubMed_p205.csv"
+corpus_path = DATA_PATH / "pubmed_landscape_abstracts.csv" #/ "PubMed_p205.csv"
 index_output_path = DATA_PATH / "PubMed_BM25Okapi.pkl"
 MIN_DF = 10
 
@@ -176,3 +176,5 @@ def save_bm25_results_json(results, results_path) -> Path:
         json.dump(serializable_results, f, indent=2, ensure_ascii=False)
 
     return file_path
+
+load_bm25_index()

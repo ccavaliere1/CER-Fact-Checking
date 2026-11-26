@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = "==3.11.*"
 dependencies = [
+    "accelerate==0.23.0",
     "ago==0.0.95",
     "aiohappyeyeballs==2.4.4",
     "aiohttp==3.11.11",
@@ -31,6 +32,7 @@ dependencies = [
     "cryptography==44.0.0",
     "cssselect==1.2.0",
     "cycler==0.12.1",
+    "datasets>=2.2.1",
     "decorator==5.1.1",
     "defusedxml==0.7.1",
     "dill>=0.4.1",

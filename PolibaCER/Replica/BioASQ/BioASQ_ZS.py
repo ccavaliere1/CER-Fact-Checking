@@ -9,12 +9,12 @@ from PolibaCER.Replica.BioASQ.DataCreator.DatasetMaker import get_bioasq_data
 from PolibaCER.Replica.FactCheck.BM25 import load_bm25_index
 from PolibaCER.Replica.FactCheck.ZS_DeBerta import generate_justification
 
-DATA_PATH = Path(__file__).resolve().parents[0] / "data"
+DATA_PATH = Path(__file__).resolve().parents[0] / "data" / "Results"
 bioASQ_path = DATA_PATH / "BioASQ_k20_sentences.csv"
 final_result_name = "BioASQ_ZS_final_results"
 LLM_MODEL = "bartowski/Qwen2.5-7B-Instruct-GGUF:Q6_K"
 START_INDEX = 0
-NUM_ROWS = 744
+NUM_ROWS = 100
 
 # -------------------------------------------- LOAD DATA ------------------------------------------- #
 bioasq_data = get_bioasq_data()
@@ -55,8 +55,8 @@ final_dataframe = source_dataframe.merge(justified_rows, left_on="Frase", right_
 
 if final_dataframe["True Label"].isna().any():
     print("Count of missing 'True Label' values:", final_dataframe["True Label"].isna().sum())
-    final_dataframe["True Label"] = final_dataframe["True Label"].fillna("NEI")
-    print("Warning: Filled dataframe with 'NEI' for missing 'True Label' values.")
+    final_dataframe["True Label"].dropna(inplace=True)
+    print("Warning: Removed rows with missing 'True Label' values.")
 
 final_dataframe = final_dataframe.rename(columns={
     "Predicted label": "Predicted Label",
