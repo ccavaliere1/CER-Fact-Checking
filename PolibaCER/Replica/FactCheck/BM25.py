@@ -1,5 +1,5 @@
 ﻿import json
-
+import sys
 import numpy as np
 from collections import Counter
 import csv
@@ -22,7 +22,9 @@ MIN_DF = 10
 try:
     STOPWORDS = set(stopwords.words("english"))
 except LookupError:
-    nltk.download("stopwords", quiet=True)
+    nltk_data_dir = Path(sys.prefix) / "nltk_data"
+    nltk.download("stopwords", download_dir=str(nltk_data_dir), quiet=True)
+    nltk.data.path.insert(0, str(nltk_data_dir))
     STOPWORDS = set(stopwords.words("english"))
 
 stemmer = SnowballStemmer("english")
@@ -174,7 +176,3 @@ def save_bm25_results_json(results, results_path) -> Path:
         json.dump(serializable_results, f, indent=2, ensure_ascii=False)
 
     return file_path
-
-if __name__ == "__main__":
-    # build_bm25_index(corpus_path, MIN_DF)
-    pass

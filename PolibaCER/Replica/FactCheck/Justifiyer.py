@@ -1,13 +1,7 @@
 ﻿import re
-from pathlib import Path
 import pandas as pd
-from PolibaCER.BioASQ.FactCheck.Reasoning import get_completion
-
-DATA_PATH = Path(__file__).resolve().parents[1] / "data"
-bioASQ_path = DATA_PATH / "BioASQ_sentences_true_label.csv"
-health_fc = DATA_PATH / "Health_fc_sentences_true_label.csv"
-
-dataframe = pd.read_csv(bioASQ_path)
+from tqdm import tqdm
+from PolibaCER.Replica.FactCheck.Reasoning import get_completion
 
 # -------------------------------------------- LLM RETRIVER_MODEL SETUP ------------------------------------------- #
 def add_to_dataframe(df, query, Risposta):
@@ -27,7 +21,7 @@ def add_to_dataframe(df, query, Risposta):
 
 def justify_dataframe(dataframe, start_index=1, num_rows=2, llm_model="bartowski/Qwen2.5-7B-Instruct-GGUF:Q6_K"):
 
-    for index in range(start_index, start_index + num_rows):
+    for index in tqdm(range(start_index, start_index + num_rows), desc="Justifying claims", unit="claim"):
         query = dataframe.loc[index, 'Frase']
         results = dataframe.loc[index, 'Sentences Concatenate']
 
@@ -57,9 +51,6 @@ def justify_dataframe(dataframe, start_index=1, num_rows=2, llm_model="bartowski
         responses = get_completion(prompt_template, model=llm_model, max_tokens=400)
         Risposta = ''.join([str(r) for r in responses])
 
-        # Stampa la risposta per ogni iterazione
-        print("")
-        print(Risposta)
         try:
             dfj
         except NameError:
@@ -68,8 +59,3 @@ def justify_dataframe(dataframe, start_index=1, num_rows=2, llm_model="bartowski
         dfj = add_to_dataframe(dfj, query, Risposta)
 
     return dfj
-
-if __name__ == "__main__":
-    # Esegui la funzione justify_dataframe con i parametri desiderati
-    dfj = justify_dataframe(dataframe, start_index=1, num_rows=2, llm_model="bartowski/Qwen2.5-7B-Instruct-GGUF:Q6_K")
-    print(dfj)
